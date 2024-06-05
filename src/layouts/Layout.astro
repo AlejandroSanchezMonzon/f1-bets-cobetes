@@ -1,51 +1,78 @@
 ---
+import Footer from "@/sections/Footer.astro";
+import Header from "@/sections/Header.astro";
+
 interface Props {
-	title: string;
+  title: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang="es-Es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Pagina web oficial para la realización de apuestas lúdicas de la temporada actual de Formula 1."
+    />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gradient-to-b from-accent via-secondary to-secondary">
+    <Header />
+
+    <slot />
+
+    <Footer />
+  </body>
 </html>
 <style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
-		background-size: 224px;
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  :root {
+    color-scheme: dark light;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    font-family: "F1 Regular", sans-serif;
+  }
+
+  main {
+    min-height: 100vh;
+  }
+
+  @font-face {
+    font-family: "F1 Regular";
+    src: url("/fonts/Formula1-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "F1 Bold";
+    src: url("/fonts/Formula1-Bold.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "F1 Italic";
+    src: url("/fonts/Formula1-Italic.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "F1 Black";
+    src: url("/fonts/Formula1-Black.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "F1 Wide";
+    src: url("/fonts/Formula1-Wide.ttf") format("truetype");
+  }
 </style>
