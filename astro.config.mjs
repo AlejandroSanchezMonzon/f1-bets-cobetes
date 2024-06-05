@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 import db from "@astrojs/db";
 import tailwind from "@astrojs/tailwind";
 
@@ -6,8 +6,8 @@ import vercel from "@astrojs/vercel/serverless";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [db(), tailwind()],
+  integrations: [db(), tailwind({ applyBaseStyles: false })],
   output: "server",
   site: "https://f1-bets-cobetes.vercel.app/",
-  adapter: vercel()
+  adapter: vercel(),
 });
