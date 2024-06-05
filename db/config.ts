@@ -2,8 +2,8 @@ import { column, defineDb } from "astro:db";
 
 const User = {
   columns: {
-    idUser: column.number({ primaryKey: true, autoIncrement: true }),
-    name: column.text(),
+    idUser: column.text({ primaryKey: true }),
+    username: column.text(),
     email: column.text({ unique: true }),
     password: column.text(),
     isAdmin: column.boolean(),
@@ -12,7 +12,7 @@ const User = {
 
 const Race = {
   columns: {
-    idRace: column.number({ primaryKey: true, autoIncrement: true }),
+    idRace: column.text({ primaryKey: true }),
     name: column.text(),
     initTime: column.date(),
     endTime: column.date(),
@@ -22,28 +22,28 @@ const Race = {
 
 const Bet = {
   columns: {
-    idBet: column.number({ primaryKey: true, autoIncrement: true }),
-    idUser: column.number({ references: () => User.columns.idUser }),
-    idRace: column.number({ references: () => Race.columns.idRace }),
-    idPilot1: column.number({ references: () => Pilot.columns.idPilot }),
-    idPilot2: column.number({ references: () => Pilot.columns.idPilot }),
-    idPilot3: column.number({ references: () => Pilot.columns.idPilot }),
+    idBet: column.text({ primaryKey: true, autoIncrement: true }),
+    idUser: column.text({ references: () => User.columns.idUser }),
+    idRace: column.text({ references: () => Race.columns.idRace }),
+    idPilot1: column.text({ references: () => Pilot.columns.idPilot }),
+    idPilot2: column.text({ references: () => Pilot.columns.idPilot }),
+    idPilot3: column.text({ references: () => Pilot.columns.idPilot }),
   },
 };
 
 const Result = {
   columns: {
-    idResult: column.number({ primaryKey: true, autoIncrement: true }),
-    idRace: column.number({ references: () => Race.columns.idRace, unique: true }),
-    idPilot1: column.number({ references: () => Pilot.columns.idPilot }),
-    idPilot2: column.number({ references: () => Pilot.columns.idPilot }),
-    idPilot3: column.number({ references: () => Pilot.columns.idPilot }),
+    idResult: column.text({ primaryKey: true, autoIncrement: true }),
+    idRace: column.text({ references: () => Race.columns.idRace, unique: true }),
+    idPilot1: column.text({ references: () => Pilot.columns.idPilot }),
+    idPilot2: column.text({ references: () => Pilot.columns.idPilot }),
+    idPilot3: column.text({ references: () => Pilot.columns.idPilot }),
   },
 };
 
 const Pilot = {
   columns: {
-    idPilot: column.number({ primaryKey: true, autoIncrement: true }),
+    idPilot: column.text({ primaryKey: true }),
     nombre: column.text(),
     team: column.text()
   },
