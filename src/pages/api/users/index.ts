@@ -1,21 +1,61 @@
+import { validetUserAdmin } from "@/utils/validation";
+import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
-import { db, Usuario } from "astro:db";
-
-const res = (
-	body: string,
-	{ status, statusText, headers }: { status?: number; statusText?: string; headers?: Headers }
-) => new Response(body, { status, statusText, headers })
+import { db, Users } from "astro:db";
+import type { User } from "@/types/User";
+import { genSaltSync, hashSync } from "bcrypt-ts";
 
 export const GET: APIRoute = async ({ request }) => {
-    try {
-      const users = await db.select().from(Usuario);
-      return new Response(JSON.stringify(users), {
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } catch (error) {
-        console.log(error)
-      return res(JSON.stringify('Something went wrong.'), { status: 500 });
+  try {
+    let token = request.headers.get("Authorization");
+    const sessionUser = await validetUserAdmin(token);
+
+    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+      return res(JSON.stringify("Not authorized."), { status: 401 });
     }
 
-    return res(JSON.stringify(''), { status: 200 });
+    const users = await db.select().from(Users);
+
+    return res(JSON.stringify(users), { status: 200 });
+  } catch (error) {
+    console.log(error);
+
+    return res(JSON.stringify("Something went wrong."), { status: 500 });
+  }
+};
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const body = await request.json();
+    const { username, email, password, isAdmin } = body;
+
+    let token = request.headers.get("Authorization");
+    const sessionUser = await validetUserAdmin(token);
+
+    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+      return res(JSON.stringify("Not authorized."), { status: 401 });
+    }
+
+    const newId = crypto.randomUUID();
+    const hashedPassword = hashSync(password, genSaltSync(10));
+
+    const user: User = {
+      idUser: newId,
+      username,
+      email,
+      password: hashedPassword,
+      isAdmin,
+    };
+
+    await db.insert(Users).values(user).onConflictDoUpdate({
+      target: Users.idUser,
+      set: { username, email, password, isAdmin },
+    });
+
+    return res(JSON.stringify(user), { status: 201 });
+  } catch (error) {
+    console.log(error);
+
+    return res(JSON.stringify("Something went wrong."), { status: 500 });
+  }
 };
