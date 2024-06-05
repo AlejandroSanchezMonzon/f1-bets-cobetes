@@ -1,80 +1,60 @@
 import { column, defineDb } from "astro:db";
 
-const Usuario = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        nombre: column.text(),
-        email: column.text({ unique: true }),
-        contraseña: column.text(),
-        esAdministrador: column.boolean(),
-    },
+const User = {
+  columns: {
+    idUser: column.number({ primaryKey: true, autoIncrement: true }),
+    name: column.text(),
+    email: column.text({ unique: true }),
+    password: column.text(),
+    isAdmin: column.boolean(),
+  },
 };
 
-const Piloto = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        nombre: column.text(),
-        nacionalidad: column.text(),
-        equipo: column.text(),
-    },
+const Race = {
+  columns: {
+    idRace: column.number({ primaryKey: true, autoIncrement: true }),
+    name: column.text(),
+    initTime: column.date(),
+    endTime: column.date(),
+    type: column.text(),
+  },
 };
 
-const GranPremio = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        nombre: column.text(),
-        fechaInicio: column.date(),
-        fechaFin: column.date(),
-        ubicacion: column.text(),
-    },
+const Bet = {
+  columns: {
+    idBet: column.number({ primaryKey: true, autoIncrement: true }),
+    idUser: column.number({ references: () => User.columns.idUser }),
+    idRace: column.number({ references: () => Race.columns.idRace }),
+    idPilot1: column.number({ references: () => Pilot.columns.idPilot }),
+    idPilot2: column.number({ references: () => Pilot.columns.idPilot }),
+    idPilot3: column.number({ references: () => Pilot.columns.idPilot }),
+  },
 };
 
-const Carrera = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        tipo: column.text(),
-        fecha: column.date(),
-        granPremioId: column.text({ references: () => GranPremio.columns.id }),
-    },
+const Result = {
+  columns: {
+    idResult: column.number({ primaryKey: true, autoIncrement: true }),
+    idRace: column.number({ references: () => Race.columns.idRace, unique: true }),
+    idPilot1: column.number({ references: () => Pilot.columns.idPilot }),
+    idPilot2: column.number({ references: () => Pilot.columns.idPilot }),
+    idPilot3: column.number({ references: () => Pilot.columns.idPilot }),
+  },
 };
 
-const Porra = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        usuarioId: column.text({ references: () => Usuario.columns.id }),
-        carreraId: column.text({ references: () => Carrera.columns.id }),
-        fecha: column.date(),
-        puntosTotales: column.number({ default: 0 }),
-    },
+const Pilot = {
+  columns: {
+    idPilot: column.number({ primaryKey: true, autoIncrement: true }),
+    nombre: column.text(),
+    team: column.text()
+  },
 };
 
-const PorraDetalle = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        porraId: column.text({ references: () => Porra.columns.id }),
-        posicion: column.number(),
-        pilotoId: column.text({ references: () => Piloto.columns.id }),
-    },
-};
-
-const ResultadoCarrera = {
-    columns: {
-        id: column.text({ primaryKey: true }),
-        carreraId: column.text({ references: () => Carrera.columns.id }),
-        posicion: column.number(),
-        pilotoId: column.text({ references: () => Piloto.columns.id }),
-    },
-};
-
-// https://astro.build/db/config
 export default defineDb({
-    tables: {
-        Usuario,
-        Piloto,
-        GranPremio,
-        Carrera,
-        Porra,
-        PorraDetalle,
-        ResultadoCarrera,
-    },
+  tables: {
+    Users: User,
+    Races: Race,
+    Bets: Bet,
+    Results: Result,
+    Pilots: Pilot,
+  },
 });
