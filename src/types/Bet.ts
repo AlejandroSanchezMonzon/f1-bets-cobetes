@@ -3,6 +3,6 @@ export interface Bet {
     idUser: string;
     idRace: string;
     idPilot1: string;
-    idPIlot2: string;
+    idPilot2: string;
     idPilot3: string;
 }

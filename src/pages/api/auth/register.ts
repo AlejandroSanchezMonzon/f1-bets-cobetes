@@ -20,7 +20,7 @@ export const POST: APIRoute = async ({ request }) => {
       isAdmin: isAdmin,
     };
 
-    if (await db.select().from(Users).where(eq(Users.email, email))) {
+    if (await userExists(email)) {
       return res(JSON.stringify("User already exists."), { status: 400 });
     }
 
@@ -33,3 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
     return res(JSON.stringify("Something went wrong."), { status: 500 });
   }
 };
+
+async function userExists(email: string) {
+  return (await db.select().from(Users).where(eq(Users.email, email)).limit(1)).length > 0;
+}

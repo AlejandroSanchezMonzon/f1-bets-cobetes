@@ -44,7 +44,7 @@ const Result = {
 const Pilot = {
   columns: {
     idPilot: column.text({ primaryKey: true }),
-    nombre: column.text(),
+    name: column.text(),
     team: column.text()
   },
 };

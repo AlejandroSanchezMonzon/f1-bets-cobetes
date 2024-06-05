@@ -56,6 +56,10 @@ export const PUT: APIRoute = async ({ request, params }) => {
       isAdmin,
     };
 
+    if (!id || (await raceExists(id))) {
+      return res(JSON.stringify("User not found."), { status: 404 });
+    }
+
     await db
       .update(Users)
       .set(user)
@@ -79,6 +83,11 @@ export const DELETE: APIRoute = async ({ params }) => {
     }
 
     const { id } = params;
+
+    if (!id || (await raceExists(id))) {
+      return res(JSON.stringify("User not found."), { status: 404 });
+    }
+
     await db.delete(Users).where(eq(Users.idUser, id ?? ""));
 
     return res(JSON.stringify("User deleted."), { status: 204 });
@@ -88,3 +97,10 @@ export const DELETE: APIRoute = async ({ params }) => {
     return res(JSON.stringify("Something went wrong."), { status: 500 });
   }
 };
+
+async function raceExists(id: string) {
+  return (
+    (await db.select().from(Users).where(eq(Users.idUser, id)).limit(1))
+      .length > 0
+  );
+}
