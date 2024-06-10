@@ -103,7 +103,9 @@
 
         if (response.ok) {
           const data = await response.json();
-          sessionStorage.setItem("token", data.token);
+          sessionStorage.setItem("token", data);
+
+          console.log(data);
 
           window.toast({
             title: "Inicio de sesión exitoso.",

@@ -1,12 +1,12 @@
 import { db, eq, Users } from "astro:db";
-import * as jose from "jose";
+import { decodeJwt } from "jose";
 
 export async function validetUserAdmin(token: string | null) {
   if (!token) {
     return null;
   }
 
-  const email = await jose.decodeJwt(token).email;
+  const email = await decodeJwt(token).email;
 
   const user = await db
     .select()
@@ -15,20 +15,4 @@ export async function validetUserAdmin(token: string | null) {
     .limit(1);
 
   return user[0];
-}
-
-export function isValidSessionStorageToken(token: string | null) {
-  try {
-    if (!token) return false;
-
-    const decodedStr = atob(token);
-    if (!decodedStr) return false;
-
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+:[^:]+$/;
-    if (!regex.test(decodedStr)) return false;
-
-    return btoa(decodedStr) === token;
-  } catch (err) {
-    return false;
-  }
 }

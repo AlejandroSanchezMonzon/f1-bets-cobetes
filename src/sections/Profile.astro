@@ -1,0 +1,164 @@
+---
+
+---
+
+<form class="max-w-md mx-auto md:min-w-96">
+  <h1 class="text-3xl font-bold text-center text-primary mb-8">
+    Cuenta de <span id="username-container"></span>
+  </h1>
+
+  <div class="relative z-0 w-full mb-5 group">
+    <input
+      type="email"
+      id="floating-email"
+      class="block py-2.5 px-0 w-full text-sm focus:outline-none text-primary bg-transparent border-0 border-b-2 border-primary appearance-none peer opacity-50"
+      placeholder=""
+      disabled
+    />
+    <label
+      for="floating-email"
+      class="peer-focus:font-medium absolute text-sm text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+      >Correo electrónico</label
+    >
+  </div>
+
+  <div class="relative z-0 w-full mb-5 group">
+    <input
+      type="password"
+      id="floating-password"
+      class="block py-2.5 px-0 w-full text-sm focus:outline-none text-primary bg-transparent border-0 border-b-2 border-primary appearance-none peer"
+      placeholder=" "
+      required
+    />
+    <label
+      for="floating-password"
+      class="peer-focus:font-medium absolute text-sm text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+      >Nueva contraseña</label
+    >
+  </div>
+  <div class="relative z-0 w-full mb-5 group">
+    <input
+      type="password"
+      id="floating-password-repeat"
+      class="block py-2.5 px-0 w-full text-sm focus:outline-none text-primary bg-transparent border-0 border-b-2 border-primary appearance-none peer"
+      placeholder=" "
+      required
+    />
+    <label
+      for="floating-password"
+      class="peer-focus:font-medium absolute text-sm text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+      >Confirmar contraseña</label
+    >
+  </div>
+
+  <button
+    type="button"
+    id="update-button"
+    class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+    >Actualizar perfil</button
+  >
+</form>
+
+<script>
+  import { decodeJwt } from "jose";
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const button = document.getElementById("update-button");
+    const usernameContainer = document.getElementById("username-container");
+
+    const emailInput = document.getElementById(
+      "floating-email"
+    ) as HTMLInputElement;
+    const passwordInput = document.getElementById(
+      "floating-password"
+    ) as HTMLInputElement;
+
+    const token = sessionStorage.getItem("token") ?? "";
+
+    const email = (await decodeJwt(token).email) as string;
+
+    try {
+      const response = await fetch(
+        "/api/users/email/" + encodeURIComponent(email),
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        emailInput.value = data.email;
+
+        if (usernameContainer) {
+          usernameContainer.innerHTML = data.username;
+        }
+      }
+    } catch (error) {
+      console.error(error);
+
+      window.toast({
+        title: "Error al obtener los datos del usuario.",
+        location: "bottom-center",
+        dismissible: false,
+        type: "error",
+        icon: true,
+      });
+    }
+
+    button?.addEventListener("click", async () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        window.toast({
+          title: "Todos los campos son obligatorios.",
+          location: "bottom-center",
+          dismissible: false,
+          type: "warning",
+          icon: true,
+        });
+
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "/api/users/email/" + encodeURIComponent(email),
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          }
+        );
+
+        if (response.ok) {
+          window.toast({
+            title: "Perfil actualizada exitosamente.",
+            location: "bottom-center",
+            dismissible: false,
+            type: "success",
+            icon: true,
+          });
+
+          setTimeout(() => {
+            sessionStorage.removeItem("token");
+            window.location.href = "/";
+          }, 1500);
+        }
+      } catch (error) {
+        window.toast({
+          title: "Se ha producido un error inesperado.",
+          location: "bottom-center",
+          dismissible: false,
+          type: "error",
+          icon: true,
+        });
+      }
+    });
+  });
+</script>

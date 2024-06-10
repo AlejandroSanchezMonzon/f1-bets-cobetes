@@ -1,7 +1,8 @@
 import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
-import { and, db, eq, Users } from "astro:db";
-import { compareSync, genSaltSync, hashSync } from "bcrypt-ts";
+import { db, eq, Users } from "astro:db";
+import { compareSync } from "bcrypt-ts";
+import { SignJWT } from "jose";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -23,7 +24,14 @@ export const POST: APIRoute = async ({ request }) => {
     if (!compareSync(password, user.password)) {
       return res(JSON.stringify("Wrong email or password."), { status: 401 });
     } else {
-      let token = btoa(`${user.email}:${user.password}`);
+      let token = await new SignJWT({
+        email: user.email,
+        password: user.password,
+        isAdmin: user.isAdmin,
+      })
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("1 day")
+        .sign(new TextEncoder().encode());
 
       return res(JSON.stringify(token), { status: 200 });
     }
