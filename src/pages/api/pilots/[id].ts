@@ -1,6 +1,6 @@
 import type { Pilot } from "@/types/Pilot";
 import { res } from "@/utils/api";
-import { validetUserAdmin } from "@/utils/validation";
+import { validetUserAdmin } from "@/utils/validations";
 import type { APIRoute } from "astro";
 import { db, eq, Pilots } from "astro:db";
 

@@ -35,5 +35,8 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 async function userExists(email: string) {
-  return (await db.select().from(Users).where(eq(Users.email, email)).limit(1)).length > 0;
+  return (
+    (await db.select().from(Users).where(eq(Users.email, email)).limit(1))
+      .length > 0
+  );
 }

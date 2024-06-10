@@ -16,3 +16,19 @@ export async function validetUserAdmin(token: string | null) {
 
   return user[0];
 }
+
+export function isValidSessionStorageToken(token: string | null) {
+  try {
+    if (!token) return false;
+
+    const decodedStr = atob(token);
+    if (!decodedStr) return false;
+
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+:[^:]+$/;
+    if (!regex.test(decodedStr)) return false;
+
+    return btoa(decodedStr) === token;
+  } catch (err) {
+    return false;
+  }
+}

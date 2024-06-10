@@ -1,4 +1,4 @@
-import { validetUserAdmin } from "@/utils/validation";
+import { validetUserAdmin } from "@/utils/validations";
 import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
 import { db, Results } from "astro:db";
@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
       idRace: idRace,
       idPilot1: idPilot1,
       idPilot2: idPilot2,
-      idPilot3: idPilot3
+      idPilot3: idPilot3,
     };
 
     await db.insert(Results).values(result).onConflictDoUpdate({

@@ -1,4 +1,4 @@
-import { validetUserAdmin } from "@/utils/validation";
+import { validetUserAdmin } from "@/utils/validations";
 import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
 import { db, Races } from "astro:db";

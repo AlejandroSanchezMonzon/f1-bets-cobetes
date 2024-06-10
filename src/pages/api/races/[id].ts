@@ -1,6 +1,6 @@
 import type { Race } from "@/types/Race";
 import { res } from "@/utils/api";
-import { validetUserAdmin } from "@/utils/validation";
+import { validetUserAdmin } from "@/utils/validations";
 import type { APIRoute } from "astro";
 import { db, eq, Races } from "astro:db";
 

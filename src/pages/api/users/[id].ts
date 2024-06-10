@@ -1,6 +1,6 @@
 import type { User } from "@/types/User";
 import { res } from "@/utils/api";
-import { validetUserAdmin } from "@/utils/validation";
+import { validetUserAdmin } from "@/utils/validations";
 import type { APIRoute } from "astro";
 import { db, eq, Users } from "astro:db";
 import { genSaltSync, hashSync } from "bcrypt-ts";
