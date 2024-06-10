@@ -1,6 +1,7 @@
 ---
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
+import Toast from "@/components/Toast.astro";
 
 interface Props {
   title: string;
@@ -28,6 +29,7 @@ const { title } = Astro.props;
     <slot />
 
     <Footer />
+    <Toast />
   </body>
 </html>
 <style is:global>
@@ -45,10 +47,17 @@ const { title } = Astro.props;
     padding: 0;
     scroll-behavior: smooth;
     font-family: "F1 Regular", sans-serif;
+    accent-color: #294643;
   }
 
   main {
-    min-height: 100vh;
+    min-height: 75vh;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0rem;
   }
 
   @font-face {
@@ -74,5 +83,11 @@ const { title } = Astro.props;
   @font-face {
     font-family: "F1 Wide";
     src: url("/fonts/Formula1-Wide.ttf") format("truetype");
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 2rem 0rem;
+    }
   }
 </style>
