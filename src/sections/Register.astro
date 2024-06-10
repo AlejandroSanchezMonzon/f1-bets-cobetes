@@ -4,18 +4,19 @@
 
 <form class="max-w-sm mx-auto md:min-w-96">
   <div class="mb-5">
-    <div class="mb-5">
-      <label for="email" class="block mb-2 text-sm font-regular text-primary"
-        >Nombre de usuario</label
-      >
-      <input
-        type="text"
-        id="username"
-        class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
-        placeholder="DuendeMaaron"
-        required
-      />
-    </div>
+    <label for="email" class="block mb-2 text-sm font-regular text-primary"
+      >Nombre de usuario</label
+    >
+    <input
+      type="text"
+      id="username"
+      class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+      placeholder="DuendeMaaron"
+      required
+    />
+  </div>
+
+  <div class="mb-5">
     <label for="email" class="block mb-2 text-sm font-regular text-primary"
       >Correo electrónico</label
     >
@@ -27,6 +28,7 @@
       required
     />
   </div>
+
   <div class="mb-5">
     <label for="password" class="block mb-2 text-sm font-regular text-primary"
       >Contraseña</label
@@ -45,6 +47,7 @@
       >Mostrar contraseña</label
     >
   </div>
+
   <div class="flex flex-col gap-4">
     <button
       id="button-register"
@@ -126,7 +129,7 @@
 
           setTimeout(() => {
             window.location.href = "/";
-          }, 2000);
+          }, 1500);
         } else if (response.status === 400) {
           window.toast({
             title: "Ya existe un usuario con este correo o nombre.",

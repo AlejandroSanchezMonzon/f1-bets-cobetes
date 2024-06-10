@@ -15,6 +15,7 @@
       required
     />
   </div>
+
   <div class="mb-5">
     <label for="password" class="block mb-2 text-sm font-regular text-primary"
       >Contraseña</label
@@ -27,20 +28,13 @@
       required
     />
   </div>
-  <!--   <div class="flex items-start mb-5">
-    <div class="flex items-center h-5">
-      <input
-        id="remember"
-        type="checkbox"
-        value=""
-        class="w-4 h-4 border border-gray-300 rounded bg-gray-50"
-        required
-      />
-    </div>
-    <label for="remember" class="ms-2 text-sm font-regular text-primary"
-      >Recordarme</label
+  <div class="mb-4">
+    <input type="checkbox" id="toggle-password" class="mr-1" />
+    <label for="togglePassword" class="text-sm text-primary"
+      >Mostrar contraseña</label
     >
-  </div> -->
+  </div>
+
   <div class="flex flex-col gap-4">
     <button
       id="button-login"
@@ -62,6 +56,17 @@
   document?.getElementById("button-register")?.addEventListener("click", () => {
     window.location.href = "/registro";
   });
+
+  document
+    ?.getElementById("toggle-password")
+    ?.addEventListener("change", togglePassword);
+
+  function togglePassword() {
+    const password = document?.getElementById("password");
+    const type =
+      password?.getAttribute("type") === "password" ? "text" : "password";
+    password?.setAttribute("type", type);
+  }
 
   document
     ?.getElementById("button-login")
@@ -107,6 +112,10 @@
             type: "success",
             icon: true,
           });
+
+          setTimeout(() => {
+            window.location.href = "/perfil";
+          }, 1500);
         } else if (response.status === 401) {
           window.toast({
             title: "Correo electrónico o contraseña incorrectos.",

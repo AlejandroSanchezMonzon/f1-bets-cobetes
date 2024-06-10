@@ -34,7 +34,10 @@ const Bet = {
 const Result = {
   columns: {
     idResult: column.text({ primaryKey: true, autoIncrement: true }),
-    idRace: column.text({ references: () => Race.columns.idRace, unique: true }),
+    idRace: column.text({
+      references: () => Race.columns.idRace,
+      unique: true,
+    }),
     idPilot1: column.text({ references: () => Pilot.columns.idPilot }),
     idPilot2: column.text({ references: () => Pilot.columns.idPilot }),
     idPilot3: column.text({ references: () => Pilot.columns.idPilot }),
@@ -45,7 +48,7 @@ const Pilot = {
   columns: {
     idPilot: column.text({ primaryKey: true }),
     name: column.text(),
-    team: column.text()
+    team: column.text(),
   },
 };
 
