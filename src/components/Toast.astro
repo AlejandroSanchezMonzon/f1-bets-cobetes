@@ -110,8 +110,16 @@
     display: flex;
     font-size: 18px;
     gap: 6px;
-    max-width: 35vw;
+    min-width: 75vw;
+    width: auto;
     padding: 15px 20px;
+  }
+
+  @media (min-width: 1024px) {
+    .butteruptoast {
+      min-width: 35vw;
+      width: auto;
+    }
   }
 
   .butteruptoast.dismissable {
