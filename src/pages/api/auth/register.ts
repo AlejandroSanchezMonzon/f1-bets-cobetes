@@ -30,7 +30,9 @@ export const POST: APIRoute = async ({ request }) => {
   } catch (error) {
     console.log(error);
 
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+    return res(JSON.stringify(`Something went wrong: ${error}`), {
+      status: 500,
+    });
   }
 };
 
