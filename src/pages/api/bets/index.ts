@@ -1,4 +1,4 @@
-import { validetUserAdmin } from "@/utils/validations";
+import { validateUserAdmin } from "@/utils/validations";
 import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
 import { db, Bets } from "astro:db";
@@ -7,9 +7,9 @@ import type { Bet } from "@/types/Bet";
 export const GET: APIRoute = async ({ request }) => {
   try {
     let token = request.headers.get("Authorization");
-    const sessionUser = await validetUserAdmin(token);
+    const isUserAdmin = await validateUserAdmin(token);
 
-    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+    if (!token || !isUserAdmin) {
       return res(JSON.stringify("Not authorized."), { status: 401 });
     }
 
@@ -29,9 +29,9 @@ export const POST: APIRoute = async ({ request }) => {
     const { idUser, idRace, idPilot1, idPilot2, idPilot3 } = body;
 
     let token = request.headers.get("Authorization");
-    const sessionUser = await validetUserAdmin(token);
+    const isUserAdmin = await validateUserAdmin(token);
 
-    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+    if (!token || !isUserAdmin) {
       return res(JSON.stringify("Not authorized."), { status: 401 });
     }
 

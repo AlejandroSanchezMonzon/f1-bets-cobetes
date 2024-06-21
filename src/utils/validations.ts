@@ -1,7 +1,7 @@
 import { db, eq, Users } from "astro:db";
 import { decodeJwt } from "jose";
 
-export async function validetUserAdmin(token: string | null) {
+export async function validateUserAdmin(token: string | null) {
   if (!token) {
     return null;
   }
@@ -14,5 +14,5 @@ export async function validetUserAdmin(token: string | null) {
     .where(eq(Users.email, email as string))
     .limit(1);
 
-  return user[0];
+  return user[0].isAdmin;
 }

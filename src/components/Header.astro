@@ -1,16 +1,12 @@
 ---
 import MenuIcon from "@/icons/MenuIcon.astro";
-import { jwtVerify } from "jose";
 ---
 
 <nav class="bg-footer border-primary shadow-md shadow-primary">
   <div
     class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
   >
-    <a
-      href="https://f1-bets-cobetes.vercel.app/"
-      class="flex items-center space-x-3 rtl:space-x-reverse"
-    >
+    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
       <img src="/favicon.svg" class="h-8" alt="Logotipo de F1 Bets" />
       <span
         class="self-center text-2xl text-primary font-wide whitespace-nowrap"
@@ -83,77 +79,61 @@ import { jwtVerify } from "jose";
   document.addEventListener("DOMContentLoaded", async function () {
     const button = document.getElementById("menu-button");
     const menu = document.getElementById("navbar-default");
+    const token = sessionStorage.getItem("token") ?? "";
 
     button?.addEventListener("click", function () {
       menu?.classList.toggle("hidden");
     });
 
-    showNavLinks();
+    showNavLinks(token);
+    await showAdminNavLinks(token);
   });
 
-  function showNavLinks() {
+  function showNavLinks(token: string) {
     const links = document.getElementById("navbar-links");
-    const token = sessionStorage.getItem("token");
+
+    if (!token || token === "") {
+      links?.classList.add("hidden");
+    } else {
+      links?.classList.remove("hidden");
+    }
+  }
+
+  async function showAdminNavLinks(token: string) {
     const admin = document.getElementById("navbar-link-admin");
 
-    if (token && isValidJWT(token)) {
-      links?.classList.remove("hidden");
-    } else {
-      links?.classList.add("hidden");
-    }
-
-    if (isUserAdmin()) {
+    if (await isUserAdmin(token)) {
       admin?.classList.remove("hidden");
     } else {
       admin?.classList.add("hidden");
     }
   }
 
-  function isValidJWT(token: string) {
-    const parts = token.split(".");
-    if (parts.length !== 3) {
+  async function isUserAdmin(token: string) {
+    if (!token || token === "") {
       return false;
-    }
-
-    for (let part of parts) {
-      if (!isBase64Url(part)) {
-        return false;
-      }
     }
 
     try {
-      const header = JSON.parse(
-        atob(parts[0].replace(/-/g, "+").replace(/_/g, "/"))
-      );
-      const payload = JSON.parse(
-        atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"))
-      );
+      const response = await fetch("/api/auth/validate-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }),
+      });
 
-      if (typeof header !== "object" || typeof payload !== "object") {
+      if (response.ok) {
+        const data = await response.json();
+
+        return data.isAdmin;
+      } else {
         return false;
       }
-    } catch (err) {
+    } catch (error) {
+      console.log(`Something went wrong, user is not an admin: ${error}`);
+
       return false;
     }
-
-    return true;
-  }
-
-  function isBase64Url(str: string) {
-    const base64UrlPattern = /^[A-Za-z0-9_-]+$/;
-    return base64UrlPattern.test(str);
-  }
-
-  function isUserAdmin() {
-    const token = sessionStorage.getItem("token");
-    if (!token) {
-      return false;
-    }
-
-    const parts = token.split(".");
-    const payload = JSON.parse(
-      atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"))
-    );
-    return payload.isAdmin;
   }
 </script>

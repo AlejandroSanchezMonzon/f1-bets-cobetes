@@ -1,6 +1,6 @@
 import type { User } from "@/types/User";
 import { res } from "@/utils/api";
-import { validetUserAdmin } from "@/utils/validations";
+import { validateUserAdmin } from "@/utils/validations";
 import type { APIRoute } from "astro";
 import { db, eq, Users } from "astro:db";
 import { genSaltSync, hashSync } from "bcrypt-ts";
@@ -8,9 +8,9 @@ import { genSaltSync, hashSync } from "bcrypt-ts";
 export const GET: APIRoute = async ({ params, request }) => {
   try {
     let token = request.headers.get("Authorization");
-    const sessionUser = await validetUserAdmin(token);
+    const isUserAdmin = await validateUserAdmin(token);
 
-    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+    if (!token || !isUserAdmin) {
       return res(JSON.stringify("Not authorized."), { status: 401 });
     }
 
@@ -36,9 +36,9 @@ export const GET: APIRoute = async ({ params, request }) => {
 export const PUT: APIRoute = async ({ request, params }) => {
   try {
     let token = request.headers.get("Authorization");
-    const sessionUser = await validetUserAdmin(token);
+    const isUserAdmin = await validateUserAdmin(token);
 
-    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+    if (!token || !isUserAdmin) {
       return res(JSON.stringify("Not authorized."), { status: 401 });
     }
 
@@ -76,9 +76,9 @@ export const PUT: APIRoute = async ({ request, params }) => {
 export const DELETE: APIRoute = async ({ params }) => {
   try {
     let token = sessionStorage.getItem("token");
-    const sessionUser = await validetUserAdmin(token);
+    const isUserAdmin = await validateUserAdmin(token);
 
-    if (!token || !sessionUser || sessionUser?.isAdmin !== true) {
+    if (!token || !isUserAdmin) {
       return res(JSON.stringify("Not authorized."), { status: 401 });
     }
 
