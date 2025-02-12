@@ -1,9 +1,9 @@
-export interface Race {
-    idRace: string;
-    name: string;
-    initTime: Date;
-    endTime: Date;
-    type: RaceType;
-}
-
-export type RaceType = "normal" | "sprint"
+export interface RaceWeekend {
+    id: number;
+    roundNumber: number;
+    raceDate: string;
+    raceName: string;
+    raceType: 'gp' | 'sprint';
+    createdAt: string;
+    deletedAt?: string | null;
+  }

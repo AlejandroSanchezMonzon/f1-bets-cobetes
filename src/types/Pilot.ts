@@ -1,5 +1,7 @@
 export interface Pilot {
-    idPilot: string;
+    id: number;
     name: string;
-    team: string;
-}
+    nationality: string;
+    createdAt: string;
+    deletedAt?: string | null;
+  }
