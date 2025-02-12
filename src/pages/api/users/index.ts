@@ -11,7 +11,7 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const token = authHeader.slice(7).trim();
-  const secretKey = process.env.JWT_SECRET;
+  const secretKey = import.meta.env.JWT_SECRET;
 
   if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
 

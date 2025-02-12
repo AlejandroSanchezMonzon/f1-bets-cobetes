@@ -6,12 +6,13 @@ import { res } from "@/utils/api";
 export const GET: APIRoute = async ({ request }) => {
   try {
     const authHeader = request.headers.get("Authorization");
+    console.log("authHeader", authHeader);
     if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
       return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
     const token = authHeader.slice(7).trim();
 
-    const secretKey = process.env.JWT_SECRET;
+    const secretKey = import.meta.env.JWT_SECRET;
     if (!secretKey) {
       throw new Error("Missing JWT_SECRET in environment variables");
     }

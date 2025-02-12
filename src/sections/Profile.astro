@@ -69,5 +69,114 @@
 </form>
 
 <script>
-  
+  document.addEventListener("DOMContentLoaded", async () => {
+    const usernameContainer = document.getElementById("username-container") as HTMLSpanElement || null;
+    const emailInput = document.getElementById("floating-email") as HTMLInputElement || null;
+    const passwordInput = document.getElementById("floating-password") as HTMLInputElement || null;
+    const passwordRepeatInput = document.getElementById("floating-password-repeat") as HTMLInputElement || null;
+    const updateButton = document.getElementById("update-button") as HTMLButtonElement || null;
+    const logoutButton = document.getElementById("logout-button") as HTMLButtonElement || null;
+
+    if (!usernameContainer || !emailInput || !passwordInput || !passwordRepeatInput || !updateButton || !logoutButton) {
+      console.error("Faltan elementos en el formulario.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/";
+      return;
+    }
+
+    async function loadUserData() {
+      try {
+        const response = await fetch("/api/auth/me", {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        if (response.ok && data.user) {
+          usernameContainer.textContent = data.user.username;
+          emailInput.value = data.user.email;
+        } else {
+          console.error("Error al cargar datos del usuario:", data.error);
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del usuario:", error);
+      }
+    }
+    await loadUserData();
+
+    updateButton.addEventListener("click", async () => {
+      const newPassword = passwordInput.value.trim();
+      const confirmPassword = passwordRepeatInput.value.trim();
+
+      if (!newPassword || !confirmPassword) {
+        window.toast({
+          title: "Error",
+          message: "Ingresa la nueva contraseña y confírmala",
+          type: "error",
+          dismissible: true,
+          icon: true
+        });
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        window.toast({
+          title: "Error",
+          message: "Las contraseñas no coinciden",
+          type: "error",
+          dismissible: true,
+          icon: true
+        });
+        return;
+      }
+
+      try {
+        const resUpdate = await fetch("/api/users/update-password", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `bearer ${token}`
+          },
+          body: JSON.stringify({ newPassword })
+        });
+        if (resUpdate.ok) {
+          window.toast({
+            title: "Éxito",
+            message: "Contraseña actualizada correctamente",
+            type: "success",
+            dismissible: true,
+            icon: true
+          });
+          passwordInput.value = "";
+          passwordRepeatInput.value = "";
+        } else {
+          window.toast({
+            title: "Error",
+            message: "Error al actualizar la contraseña",
+            type: "error",
+            dismissible: true,
+            icon: true
+          });
+        }
+      } catch (error) {
+        console.error("Error al actualizar contraseña:", error);
+        window.toast({
+          title: "Error",
+          message: "Error en la conexión con el servidor",
+          type: "error",
+          dismissible: true,
+          icon: true
+        });
+      }
+    });
+
+    logoutButton.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "/";
+    });
+  });
 </script>
