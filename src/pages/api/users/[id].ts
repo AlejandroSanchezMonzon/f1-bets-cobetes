@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ params, request }) => {
     return res(JSON.stringify({ error: "Invalid user id" }), { status: 400 });
   }
 
-  const authHeader = request.headers.get("authorization");
+  const authHeader = request.headers.get("Authorization");
   if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
@@ -56,7 +56,7 @@ export const GET: APIRoute = async ({ params, request }) => {
 export const PATCH: APIRoute = async ({ params, request }) => {
   const { id } = params;
 
-  const authHeader = request.headers.get("authorization");
+  const authHeader = request.headers.get("Authorization");
   if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }

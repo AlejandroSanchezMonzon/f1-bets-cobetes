@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { res } from "@/utils/api";
 
 export const GET: APIRoute = async ({ request }) => {
-  const authHeader = request.headers.get("authorization");
+  const authHeader = request.headers.get("Authorization");
 
   if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });

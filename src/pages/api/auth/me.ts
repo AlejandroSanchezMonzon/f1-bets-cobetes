@@ -5,7 +5,7 @@ import { res } from "@/utils/api";
 
 export const GET: APIRoute = async ({ request }) => {
   try {
-    const authHeader = request.headers.get("authorization");
+    const authHeader = request.headers.get("Authorization");
     if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
       return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
     }
