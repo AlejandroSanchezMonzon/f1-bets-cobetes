@@ -47,12 +47,21 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const emailInput = document.getElementById("email") as HTMLInputElement || null;
-    const passwordInput = document.getElementById("password") as HTMLInputElement || null;
-    const loginButton = document.getElementById("button-login") as HTMLButtonElement || null;
-    const togglePasswordCheckbox = document.getElementById("toggle-password") as HTMLInputElement || null;
+    const emailInput =
+      (document.getElementById("email") as HTMLInputElement) || null;
+    const passwordInput =
+      (document.getElementById("password") as HTMLInputElement) || null;
+    const loginButton =
+      (document.getElementById("button-login") as HTMLButtonElement) || null;
+    const togglePasswordCheckbox =
+      (document.getElementById("toggle-password") as HTMLInputElement) || null;
 
-    if (!emailInput || !passwordInput || !loginButton || !togglePasswordCheckbox) {
+    if (
+      !emailInput ||
+      !passwordInput ||
+      !loginButton ||
+      !togglePasswordCheckbox
+    ) {
       console.error("No se han encontrado algunos elementos del formulario.");
       return;
     }
@@ -70,7 +79,13 @@
       const password = passwordInput.value;
 
       if (!email || !password) {
-        window.toast({ title: "Error", message: "Por favor, ingresa correo y contraseña", type: "error", dismissible: true });
+        window.toast({
+          title: "Error",
+          message: "Por favor, ingresa correo y contraseña",
+          type: "error",
+          icon: true,
+          dismissible: true
+        });
         return;
       }
 
@@ -78,20 +93,38 @@
         const response = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password }),
         });
         const data = await response.json();
 
         if (response.ok) {
-          window.toast({ title: "Éxito", message: "Inicio de sesión exitoso", type: "success", dismissible: true });
+          window.toast({
+            title: "Éxito",
+            message: "Inicio de sesión exitoso",
+            type: "success",
+            icon: true,
+            dismissible: true
+          });
           localStorage.setItem("token", data.token);
-          window.location.href = "/";
+          window.location.href = "/perfil";
         } else {
-          window.toast({ title: "Error", message: data.error || "Credenciales incorrectas", type: "error", dismissible: true });
+          window.toast({
+            title: "Error",
+            message: "Credenciales incorrectas",
+            type: "error",
+            icon: true,
+            dismissible: true
+          });
         }
       } catch (error) {
         console.error("Error en inicio de sesión:", error);
-        window.toast({ title: "Error", message: "Error en la conexión con el servidor", type: "error", dismissible: true });
+        window.toast({
+          title: "Error",
+          message: "Error en la conexión con el servidor",
+          type: "error",
+          icon: true,
+          dismissible: true
+        });
       }
     });
   });

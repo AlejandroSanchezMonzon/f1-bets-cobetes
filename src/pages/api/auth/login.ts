@@ -32,13 +32,13 @@ export const POST: APIRoute = async ({ request }) => {
       return res(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
+    const token = jwt.sign({ userId: user.id }, import.meta.env.JWT_SECRET!, { expiresIn: "1d" });
 
     return res(JSON.stringify({ token }), { status: 200 });
 
   } catch (error) {
     console.error(error);
 
-    return res(JSON.stringify({ error: "Server Error" }), { status: 500 });
+    return res(JSON.stringify({ error: "Server Error: " + error}), { status: 500 });
   }
 };
