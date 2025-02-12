@@ -1,45 +1,44 @@
-import { res } from "@/utils/api";
+// src/pages/api/auth/login.ts
 import type { APIRoute } from "astro";
-import { db, eq, Users } from "astro:db";
-import { compareSync } from "bcrypt-ts";
-import { SignJWT } from "jose";
+import { db } from "@/lib/turso";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { res } from "@/utils/api";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const body = await request.json();
-    const { email, password } = body;
-
-    const users = await db
-      .select()
-      .from(Users)
-      .where(eq(Users.email, email))
-      .limit(1);
-
-    if (!users || users.length === 0) {
-      return res(JSON.stringify("User not found."), { status: 401 });
+    // Extraer email y password del cuerpo de la petición
+    const { email, password } = await request.json();
+    if (!email || !password) {
+      return res(JSON.stringify({ error: "Missing fields" }), { status: 400 });
     }
 
-    const user = users[0];
-
-    if (!compareSync(password, user.password)) {
-      return res(JSON.stringify("Wrong email or password."), { status: 401 });
-    } else {
-      let token = await new SignJWT({
-        email: user.email,
-        password: user.password,
-        isAdmin: user.isAdmin,
-      })
-        .setProtectedHeader({ alg: "HS256" })
-        .setExpirationTime("1 day")
-        .sign(new TextEncoder().encode());
-
-      return res(JSON.stringify(token), { status: 200 });
-    }
-  } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify(`Something went wrong: ${error}`), {
-      status: 500,
+    // Ejecutar la consulta para buscar el usuario por email
+    const result = await db.execute({
+      sql: "SELECT * FROM Users WHERE email = ?",
+      args: [email],
     });
+    const user = result.rows.length > 0 ? result.rows[0] : null;
+    if (!user) {
+      return res(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
+    }
+
+    // Validar que el campo password sea un string
+    if (typeof user.password !== "string") {
+      return res(JSON.stringify({ error: "Invalid user password" }), { status: 400 });
+    }
+
+    // Comparar la contraseña enviada con el hash almacenado
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      return res(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
+    }
+
+    // Generar el token JWT (con expiración de 1 día)
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
+    return res(JSON.stringify({ token }), { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return res(JSON.stringify({ error: "Server Error" }), { status: 500 });
   }
 };
