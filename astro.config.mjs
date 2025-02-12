@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-import tailwindcss from '@tailwindcss/vite';
+import tailwind from '@astrojs/tailwind';
 
 import vercel from '@astrojs/vercel';
 
@@ -11,9 +11,11 @@ export default defineConfig({
 
   site: "https://f1-bets-cobetes.vercel.app",
 
-  vite: {
+  /*vite: {
     plugins: [tailwindcss()]
-  },
+  },*/
+
+  integrations: [tailwind()],
 
   adapter: vercel()
 });
