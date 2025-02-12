@@ -1,106 +1,112 @@
-import type { User } from "@/types/User";
-import { res } from "@/utils/api";
-import { validateUserAdmin } from "@/utils/validations";
 import type { APIRoute } from "astro";
-import { db, eq, Users } from "astro:db";
-import { genSaltSync, hashSync } from "bcrypt-ts";
+import { db } from "@/lib/turso";
+import jwt from "jsonwebtoken";
+import { res } from "@/utils/api";
 
 export const GET: APIRoute = async ({ params, request }) => {
-  try {
-    let token = request.headers.get("Authorization");
-    const isUserAdmin = await validateUserAdmin(token);
-
-    if (!token || !isUserAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
-    }
-
-    const { id } = params;
-    const user = await db
-      .select()
-      .from(Users)
-      .where(eq(Users.idUser, id ?? ""))
-      .limit(1);
-
-    if (!user) {
-      return res(JSON.stringify("User not found."), { status: 404 });
-    }
-
-    return res(JSON.stringify(user[0]), { status: 200 });
-  } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+  const { id } = params;
+  if (!id) {
+    return res(JSON.stringify({ error: "Invalid user id" }), { status: 400 });
   }
-};
 
-export const PUT: APIRoute = async ({ request, params }) => {
-  try {
-    let token = request.headers.get("Authorization");
-    const isUserAdmin = await validateUserAdmin(token);
-
-    if (!token || !isUserAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
-    }
-
-    const { id } = params;
-    const body = await request.json();
-
-    const { username, email, password, isAdmin } = body;
-    const hashedPassword = hashSync(password, genSaltSync(10));
-
-    const user: User = {
-      idUser: id ?? "",
-      username,
-      email,
-      password: hashedPassword,
-      isAdmin,
-    };
-
-    if (!id || (await raceExists(id))) {
-      return res(JSON.stringify("User not found."), { status: 404 });
-    }
-
-    await db
-      .update(Users)
-      .set(user)
-      .where(eq(Users.idUser, id ?? ""));
-
-    return res(JSON.stringify(user), { status: 200 });
-  } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
-};
+  const token = authHeader.slice(7).trim();
+  const secretKey = process.env.JWT_SECRET;
+  if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
 
-export const DELETE: APIRoute = async ({ params }) => {
+  let decoded: any;
   try {
-    let token = sessionStorage.getItem("token");
-    const isUserAdmin = await validateUserAdmin(token);
-
-    if (!token || !isUserAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
-    }
-
-    const { id } = params;
-
-    if (!id || (await raceExists(id))) {
-      return res(JSON.stringify("User not found."), { status: 404 });
-    }
-
-    await db.delete(Users).where(eq(Users.idUser, id ?? ""));
-
-    return res(JSON.stringify("User deleted."), { status: 204 });
+    decoded = jwt.verify(token, secretKey);
   } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
-};
+  const requesterId = decoded.userId;
 
-async function raceExists(id: string) {
-  return (
-    (await db.select().from(Users).where(eq(Users.idUser, id)).limit(1))
-      .length > 0
+  const adminCheck = await db.execute({
+    sql: "SELECT is_admin FROM Users WHERE id = ?",
+    args: [requesterId],
+  });
+  if (adminCheck.rows.length === 0) {
+    return res(JSON.stringify({ error: "User not found" }), { status: 404 });
+  }
+  const requester = adminCheck.rows[0];
+
+  if (!requester.is_admin && requesterId.toString() !== id) {
+    return res(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+  }
+
+  const result = await db.execute({
+    sql: "SELECT id, username, email, is_admin FROM Users WHERE id = ?",
+    args: [id],
+  });
+  if (result.rows.length === 0) {
+    return res(JSON.stringify({ error: "User not found" }), { status: 404 });
+  }
+  const user = result.rows[0];
+
+  return res(
+    JSON.stringify({ user }),
+    { status: 200 }
   );
-}
+};
+
+export const PATCH: APIRoute = async ({ params, request }) => {
+  const { id } = params;
+
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+  const token = authHeader.slice(7).trim();
+  const secretKey = process.env.JWT_SECRET;
+  if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
+
+  let decoded: any;
+  try {
+    decoded = jwt.verify(token, secretKey);
+  } catch (error) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+  const requesterId = decoded.userId;
+
+  const adminCheck = await db.execute({
+    sql: "SELECT is_admin FROM Users WHERE id = ?",
+    args: [requesterId],
+  });
+  if (adminCheck.rows.length === 0) {
+    return res(JSON.stringify({ error: "User not found" }), { status: 404 });
+  }
+  const requester = adminCheck.rows[0];
+
+  if (!requester.is_admin && requesterId.toString() !== id) {
+    return res(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+  }
+
+  const { username, email, is_admin } = await request.json();
+
+  let fields: string[] = [];
+  let args: any[] = [];
+  if (username) {
+    fields.push("username = ?");
+    args.push(username);
+  }
+  if (email) {
+    fields.push("email = ?");
+    args.push(email);
+  }
+  if (typeof is_admin !== "undefined" && requester.is_admin) {
+    fields.push("is_admin = ?");
+    args.push(is_admin ? 1 : 0);
+  }
+  if (fields.length === 0) {
+    return res(JSON.stringify({ error: "No fields to update" }), { status: 400 });
+  }
+  args.push(id);
+  const updateQuery = `UPDATE Users SET ${fields.join(", ")} WHERE id = ?`;
+  await db.execute({ sql: updateQuery, args });
+
+  return res(JSON.stringify({ message: "User updated" }), { status: 200 });
+};

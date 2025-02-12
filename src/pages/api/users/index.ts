@@ -1,61 +1,50 @@
-import { validateUserAdmin } from "@/utils/validations";
-import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
-import { db, Users } from "astro:db";
-import type { User } from "@/types/User";
-import { genSaltSync, hashSync } from "bcrypt-ts";
+import { db } from "@/lib/turso";
+import jwt from "jsonwebtoken";
+import { res } from "@/utils/api";
 
 export const GET: APIRoute = async ({ request }) => {
-  try {
-    let token = request.headers.get("Authorization");
-    const isUSerAdmin = await validateUserAdmin(token);
+  const authHeader = request.headers.get("authorization");
 
-    if (!token || !isUSerAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
-    }
-
-    const users = await db.select().from(Users);
-
-    return res(JSON.stringify(users), { status: 200 });
-  } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+  if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
-};
 
-export const POST: APIRoute = async ({ request }) => {
+  const token = authHeader.slice(7).trim();
+  const secretKey = process.env.JWT_SECRET;
+
+  if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
+
+  let decoded: any;
   try {
-    const body = await request.json();
-    const { username, email, password, isAdmin } = body;
-
-    let token = request.headers.get("Authorization");
-    const isUSerAdmin = await validateUserAdmin(token);
-
-    if (!token || !isUSerAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
-    }
-
-    const newId = crypto.randomUUID();
-    const hashedPassword = hashSync(password, genSaltSync(10));
-
-    const user: User = {
-      idUser: newId,
-      username,
-      email,
-      password: hashedPassword,
-      isAdmin,
-    };
-
-    await db.insert(Users).values(user).onConflictDoUpdate({
-      target: Users.idUser,
-      set: { username, email, password, isAdmin },
-    });
-
-    return res(JSON.stringify(user), { status: 201 });
+    decoded = jwt.verify(token, secretKey);
   } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
+
+  const requesterId = decoded.userId;
+  const adminCheck = await db.execute({
+    sql: "SELECT is_admin FROM Users WHERE id = ?",
+    args: [requesterId],
+  });
+
+  if (adminCheck.rows.length === 0) {
+    return res(JSON.stringify({ error: "User not found" }), { status: 404 });
+  }
+
+  const requester = adminCheck.rows[0];
+
+  if (!requester.is_admin) {
+    return res(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+  }
+
+  const result = await db.execute({
+    sql: "SELECT id, username, email, is_admin FROM Users",
+    args: [],
+  });
+
+  return res(
+    JSON.stringify({ users: result.rows }),
+    { status: 200 }
+  );
 };
