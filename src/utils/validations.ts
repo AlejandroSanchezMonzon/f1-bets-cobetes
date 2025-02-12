@@ -1,18 +1,27 @@
-import { db, eq, Users } from "astro:db";
-import { decodeJwt } from "jose";
+import jwt from "jsonwebtoken";
 
-export async function validateUserAdmin(token: string | null) {
-  if (!token) {
-    return null;
-  }
+export async function validateAuth(authHeader: string | null): Promise<number | null> {
+    if (!authHeader) {
+        return null;
+    }
 
-  const email = await decodeJwt(token).email;
+    if (!authHeader.toLowerCase().startsWith("Bearer ")) {
+        return null;
+    }
 
-  const user = await db
-    .select()
-    .from(Users)
-    .where(eq(Users.email, email as string))
-    .limit(1);
+    const token = authHeader.slice(7).trim();
 
-  return user[0].isAdmin;
+    const secretKey = process.env.JWT_SECRET;
+    if (!secretKey) {
+        throw new Error("Missing JWT_SECRET in environment variables");
+    }
+
+    try {
+        const decoded = jwt.verify(token, secretKey) as { userId: number; iat: number; exp: number };
+
+        return decoded.userId;
+    } catch (err) {
+        console.error("Invalid token:", err);
+        return null;
+    }
 }
