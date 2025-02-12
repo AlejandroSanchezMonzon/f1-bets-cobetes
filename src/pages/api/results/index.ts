@@ -1,59 +1,83 @@
-import { validateUserAdmin } from "@/utils/validations";
-import { res } from "@/utils/api";
 import type { APIRoute } from "astro";
-import { db, Results } from "astro:db";
-import type { Result } from "@/types/Result";
+import { db } from "@/lib/turso";
+import { res } from "@/utils/api";
+import { checkAdmin } from "@/utils/auth";
 
 export const GET: APIRoute = async ({ request }) => {
+  const authHeader = request.headers.get("Authorization");
+  const adminId = await checkAdmin(authHeader);
+  if (!adminId) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
   try {
-    let token = request.headers.get("Authorization");
-    const isUserAdmin = await validateUserAdmin(token);
-
-    if (!token || !isUserAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
-    }
-
-    const results = await db.select().from(Results);
-
-    return res(JSON.stringify(results), { status: 200 });
+    const result = await db.execute({
+      sql: `SELECT
+              race_weekend_id,
+              sunday_first,
+              sunday_second,
+              sunday_third,
+              sprint_first,
+              sprint_second,
+              sprint_third,
+              created_at
+            FROM Results
+            WHERE deleted_at IS NULL`,
+      args: [],
+    });
+    return res(JSON.stringify({ results: result.rows }), {
+      status: 200
+    });
   } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+    console.error("Error in GET /api/results:", error);
+    return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };
 
 export const POST: APIRoute = async ({ request }) => {
+  const authHeader = request.headers.get("Authorization");
+  const adminId = await checkAdmin(authHeader);
+  if (!adminId) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
   try {
-    const body = await request.json();
-    const { idRace, idPilot1, idPilot2, idPilot3 } = body;
+    const {
+      race_weekend_id,
+      sunday_first,
+      sunday_second,
+      sunday_third,
+      sprint_first,
+      sprint_second,
+      sprint_third,
+    } = await request.json();
 
-    let token = request.headers.get("Authorization");
-    const isUserAdmin = await validateUserAdmin(token);
-
-    if (!token || !isUserAdmin) {
-      return res(JSON.stringify("Not authorized."), { status: 401 });
+    if (!race_weekend_id || !sunday_first || !sunday_second || !sunday_third) {
+      return res(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
     }
 
-    const newId = crypto.randomUUID();
-
-    const result: Result = {
-      idResult: newId,
-      idRace: idRace,
-      idPilot1: idPilot1,
-      idPilot2: idPilot2,
-      idPilot3: idPilot3,
-    };
-
-    await db.insert(Results).values(result).onConflictDoUpdate({
-      target: Results.idResult,
-      set: { idRace, idPilot1, idPilot2, idPilot3 },
+    await db.execute({
+      sql: `INSERT INTO Results (
+              race_weekend_id,
+              sunday_first,
+              sunday_second,
+              sunday_third,
+              sprint_first,
+              sprint_second,
+              sprint_third
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        race_weekend_id,
+        sunday_first,
+        sunday_second,
+        sunday_third,
+        sprint_first || null,
+        sprint_second || null,
+        sprint_third || null,
+      ],
     });
 
-    return res(JSON.stringify(result), { status: 201 });
+    return res(JSON.stringify({ message: "Result created" }), { status: 201 });
   } catch (error) {
-    console.log(error);
-
-    return res(JSON.stringify("Something went wrong."), { status: 500 });
+    console.error("Error in POST /api/results:", error);
+    return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };
