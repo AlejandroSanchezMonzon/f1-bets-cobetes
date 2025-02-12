@@ -30,7 +30,7 @@ export const GET: APIRoute = async ({ request, url }) => {
 };
 
 export const POST: APIRoute = async ({ request }) => {
-  const authHeader = request.headers.get("authorization");
+  const authHeader = request.headers.get("Authorization");
   const userId = validateUser(authHeader);
   if (!userId) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });

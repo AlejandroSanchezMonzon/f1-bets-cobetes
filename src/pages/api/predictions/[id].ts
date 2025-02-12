@@ -44,7 +44,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     return res(JSON.stringify({ error: "Invalid prediction id" }), { status: 400 });
   }
 
-  const authHeader = request.headers.get("authorization");
+  const authHeader = request.headers.get("Authorization");
   const userId = validateUser(authHeader);
   if (!userId) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
