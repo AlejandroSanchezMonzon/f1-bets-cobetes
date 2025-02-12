@@ -42,12 +42,57 @@
       class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
       >Iniciar sesión</button
     >
-
-    <button
-      id="button-register"
-      type="button"
-      class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-      >No tengo una cuenta</button
-    >
   </div>
 </form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const emailInput = document.getElementById("email") as HTMLInputElement || null;
+    const passwordInput = document.getElementById("password") as HTMLInputElement || null;
+    const loginButton = document.getElementById("button-login") as HTMLButtonElement || null;
+    const togglePasswordCheckbox = document.getElementById("toggle-password") as HTMLInputElement || null;
+
+    if (!emailInput || !passwordInput || !loginButton || !togglePasswordCheckbox) {
+      console.error("No se han encontrado algunos elementos del formulario.");
+      return;
+    }
+
+    togglePasswordCheckbox.addEventListener("change", () => {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+      } else {
+        passwordInput.type = "password";
+      }
+    });
+
+    loginButton.addEventListener("click", async () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        window.toast({ title: "Error", message: "Por favor, ingresa correo y contraseña", type: "error", dismissible: true });
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          window.toast({ title: "Éxito", message: "Inicio de sesión exitoso", type: "success", dismissible: true });
+          localStorage.setItem("token", data.token);
+          window.location.href = "/";
+        } else {
+          window.toast({ title: "Error", message: data.error || "Credenciales incorrectas", type: "error", dismissible: true });
+        }
+      } catch (error) {
+        console.error("Error en inicio de sesión:", error);
+        window.toast({ title: "Error", message: "Error en la conexión con el servidor", type: "error", dismissible: true });
+      }
+    });
+  });
+</script>
