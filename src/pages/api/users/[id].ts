@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { db } from "@/lib/turso";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import { res } from "@/utils/api";
 
 export const GET: APIRoute = async ({ params, request }) => {
@@ -14,7 +15,7 @@ export const GET: APIRoute = async ({ params, request }) => {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
   const token = authHeader.slice(7).trim();
-  const secretKey = process.env.JWT_SECRET;
+  const secretKey = import.meta.env.JWT_SECRET;
   if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
 
   let decoded: any;
@@ -61,7 +62,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
   const token = authHeader.slice(7).trim();
-  const secretKey = process.env.JWT_SECRET;
+  const secretKey = import.meta.env.JWT_SECRET;
   if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
 
   let decoded: any;
@@ -85,7 +86,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     return res(JSON.stringify({ error: "Forbidden" }), { status: 403 });
   }
 
-  const { username, email, is_admin } = await request.json();
+  const { username, email, is_admin, password } = await request.json();
 
   let fields: string[] = [];
   let args: any[] = [];
@@ -100,6 +101,11 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   if (typeof is_admin !== "undefined" && requester.is_admin) {
     fields.push("is_admin = ?");
     args.push(is_admin ? 1 : 0);
+  }
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    fields.push("password = ?");
+    args.push(hashedPassword);
   }
   if (fields.length === 0) {
     return res(JSON.stringify({ error: "No fields to update" }), { status: 400 });

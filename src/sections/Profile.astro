@@ -88,6 +88,8 @@
       return;
     }
 
+    let currentUser: any = null;
+
     async function loadUserData() {
       try {
         const response = await fetch("/api/auth/me", {
@@ -99,6 +101,7 @@
         if (response.ok && data.user) {
           usernameContainer.textContent = data.user.username;
           emailInput.value = data.user.email;
+          currentUser = data.user;
         } else {
           console.error("Error al cargar datos del usuario:", data.error);
           window.location.href = "/";
@@ -134,14 +137,25 @@
         return;
       }
 
+      if (!currentUser) {
+        window.toast({
+          title: "Error",
+          message: "No se pudo cargar la información del usuario",
+          type: "error",
+          dismissible: true,
+          icon: true
+        });
+        return;
+      }
+
       try {
-        const resUpdate = await fetch("/api/users/update-password", {
+        const resUpdate = await fetch(`/api/users/${currentUser.id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `bearer ${token}`
           },
-          body: JSON.stringify({ newPassword })
+          body: JSON.stringify({ password: newPassword })
         });
         if (resUpdate.ok) {
           window.toast({
@@ -153,6 +167,8 @@
           });
           passwordInput.value = "";
           passwordRepeatInput.value = "";
+
+          window.location.href = "/";
         } else {
           window.toast({
             title: "Error",
