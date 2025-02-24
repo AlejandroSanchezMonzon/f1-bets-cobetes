@@ -1,5 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: '"F1 Regular", sans-serif';
+    --font-bold: '"F1 Bold", sans-serif';
+    --font-italic: '"F1 Italic", sans-serif';
+    --font-black: '"F1 Black", sans-serif';
+    --font-wide: '"F1 Wide", sans-serif';
+
+    --color-primary: #fafafa;
+    --color-secondary: #0a0a0a;
+    --color-accent: #294643;
+    --color-footer: #171717;
+}
+
 :root {
     color-scheme: dark light;
+}
+
+::selection {
+    background-color: #294643;
+    color: #fafafa;
 }
 
 html,
@@ -9,11 +29,6 @@ body {
     scroll-behavior: smooth;
     font-family: "F1 Regular", sans-serif;
     accent-color: #294643;
-}
-
-::selection {
-    background-color: #294643;
-    color: #fafafa;
 }
 
 main {
