@@ -1,16 +1,26 @@
-@import "tailwindcss";
+@font-face {
+    font-family: "F1 Regular";
+    src: url("/fonts/Formula1-Regular.ttf") format("truetype");
+}
 
-@theme {
-    --font-sans: '"F1 Regular", sans-serif';
-    --font-bold: '"F1 Bold", sans-serif';
-    --font-italic: '"F1 Italic", sans-serif';
-    --font-black: '"F1 Black", sans-serif';
-    --font-wide: '"F1 Wide", sans-serif';
+@font-face {
+    font-family: "F1 Bold";
+    src: url("/fonts/Formula1-Bold.ttf") format("truetype");
+}
 
-    --color-primary: #fafafa;
-    --color-secondary: #0a0a0a;
-    --color-accent: #294643;
-    --color-footer: #171717;
+@font-face {
+    font-family: "F1 Italic";
+    src: url("/fonts/Formula1-Italic.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "F1 Black";
+    src: url("/fonts/Formula1-Black.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "F1 Wide";
+    src: url("/fonts/Formula1-Wide.ttf") format("truetype");
 }
 
 :root {
@@ -41,89 +51,23 @@ main {
     padding: 4rem 0rem;
 }
 
-@font-face {
-    font-family: "F1 Regular";
-    src: url("/fonts/Formula1-Regular.ttf") format("truetype");
-}
+@import "tailwindcss";
 
-@font-face {
-    font-family: "F1 Bold";
-    src: url("/fonts/Formula1-Bold.ttf") format("truetype");
-}
+@theme {
+    --color-primary: #fafafa;
+    --color-secondary: #0a0a0a;
+    --color-accent: #294643;
+    --color-footer: #171717;
 
-@font-face {
-    font-family: "F1 Italic";
-    src: url("/fonts/Formula1-Italic.ttf") format("truetype");
-}
-
-@font-face {
-    font-family: "F1 Black";
-    src: url("/fonts/Formula1-Black.ttf") format("truetype");
-}
-
-@font-face {
-    font-family: "F1 Wide";
-    src: url("/fonts/Formula1-Wide.ttf") format("truetype");
+    --font-sans: 'F1 Regular', sans-serif;
+    --font-bold: 'F1 Bold', sans-serif;
+    --font-italic: 'F1 Italic', sans-serif;
+    --font-black: 'F1 Black', sans-serif;
+    --font-wide: 'F1 Wide', sans-serif;
 }
 
 @media (max-width: 768px) {
     main {
         padding: 2rem 0rem;
-    }
-}
-
-/* CSS reset */
-* {
-    margin: 0;
-    padding: 0;
-}
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-body {
-    min-height: 100dvh;
-}
-
-input,
-button,
-textarea,
-select {
-    font: inherit;
-}
-
-p {
-    text-wrap: pretty;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    text-wrap: balance;
-}
-
-img,
-video,
-svg {
-    height: auto;
-    max-width: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-        transition: none;
     }
 }
