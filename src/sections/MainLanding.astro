@@ -1,0 +1,29 @@
+---
+import NextRaceCountdown from "@/components/NextRaceCountdown.jsx";
+import NextBetDetails from "@/components/NextBetDetails.astro";
+import RankingOverview from "@/components/RankingOverview.astro";
+---
+
+<div class="grid grid-cols-2 gap-4 px-16 w-screen h-100">
+  <div class="col-span-2">
+    <NextRaceCountdown client:load />
+  </div>
+
+  <div class="row-span-4 col-start-2 row-start-2">
+    <NextBetDetails />
+  </div>
+
+  <div class="row-span-4 col-start-1 row-start-2">
+    <RankingOverview />
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+  });
+</script>
