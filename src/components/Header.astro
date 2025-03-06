@@ -92,8 +92,6 @@ import MenuIcon from "@/icons/MenuIcon.astro";
   function showNavLinks(token: string) {
     const links = document.getElementById("navbar-links");
 
-    console.log("Token:", token);
-
     if (!token || token === "") {
       links?.classList.add("hidden");
     } else {
