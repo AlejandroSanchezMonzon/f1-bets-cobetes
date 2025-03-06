@@ -38,7 +38,7 @@
     <button
       id="button-login"
       type="button"
-      class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+      class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center cursor-pointer"
       >Iniciar sesión</button
     >
   </div>
@@ -54,6 +54,12 @@
       (document.getElementById("button-login") as HTMLButtonElement) || null;
     const togglePasswordCheckbox =
       (document.getElementById("toggle-password") as HTMLInputElement) || null;
+
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      window.location.href = "/perfil";
+      return;
+    }
 
     if (
       !emailInput ||
