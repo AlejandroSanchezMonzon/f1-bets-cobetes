@@ -63,8 +63,8 @@
         class="flex items-center gap-2 text-primary opacity-50"
       >
         <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        <span class="flex items-center text-sm hover:underline"
-          >Cerra sesión</span
+        <span class="flex items-center text-sm hover:underline cursor-pointer"
+          >Cerrar sesión</span
         >
       </button>
     </div>
@@ -85,9 +85,9 @@
       return;
     }
 
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) {
-      window.location.href = "/";
+      window.location.href = "/login";
       return;
     }
 
@@ -194,7 +194,7 @@
     });
 
     logoutButton.addEventListener("click", () => {
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       window.location.href = "/";
     });
   });

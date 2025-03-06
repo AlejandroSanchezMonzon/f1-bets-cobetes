@@ -23,7 +23,7 @@
       type="password"
       id="password"
       class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
-      placeholder="pepelotas77"
+      placeholder="chestercueva99"
       required
     />
   </div>
@@ -104,7 +104,9 @@
             icon: true,
             dismissible: true
           });
-          localStorage.setItem("token", data.token);
+
+          sessionStorage.setItem("token", data.token);
+
           window.location.href = "/perfil";
         } else {
           window.toast({

@@ -7,7 +7,7 @@ import MenuIcon from "@/icons/MenuIcon.astro";
     class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
   >
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img src="/favicon.svg" class="h-8" alt="Logotipo de F1 Bets" />
+      <img src="/logo.png" class="h-12" alt="Logotipo de F1 Bets" />
       <span
         class="self-center text-2xl text-primary font-wide whitespace-nowrap"
         >F1 Bets</span
@@ -86,11 +86,13 @@ import MenuIcon from "@/icons/MenuIcon.astro";
     });
 
     showNavLinks(token);
-    await showAdminNavLinks(token);
+    showAdminNavLinks(token);
   });
 
   function showNavLinks(token: string) {
     const links = document.getElementById("navbar-links");
+
+    console.log("Token:", token);
 
     if (!token || token === "") {
       links?.classList.add("hidden");
@@ -102,38 +104,22 @@ import MenuIcon from "@/icons/MenuIcon.astro";
   async function showAdminNavLinks(token: string) {
     const admin = document.getElementById("navbar-link-admin");
 
-    if (await isUserAdmin(token)) {
-      admin?.classList.remove("hidden");
-    } else {
-      admin?.classList.add("hidden");
-    }
-  }
-
-  async function isUserAdmin(token: string) {
-    if (!token || token === "") {
-      return false;
-    }
-
     try {
-      const response = await fetch("/api/auth/validate-admin", {
-        method: "POST",
+      const response = await fetch("/api/auth/is-admin", {
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ token }),
       });
+      const data = await response.json();
 
-      if (response.ok) {
-        const data = await response.json();
-
-        return data.isAdmin;
+      if (data.isAdmin) {
+        admin?.classList.remove("hidden");
       } else {
-        return false;
+        admin?.classList.add("hidden");
       }
     } catch (error) {
-      console.log(`Something went wrong, user is not an admin: ${error}`);
-
-      return false;
+      console.error("Error checking admin status:", error);
+      admin?.classList.add("hidden");
     }
   }
 </script>
