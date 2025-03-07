@@ -1,4 +1,5 @@
 ---
+
 ---
 
 <form class="max-w-md mx-auto md:min-w-96">
@@ -73,14 +74,31 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
-    const usernameContainer = document.getElementById("username-container") as HTMLSpanElement || null;
-    const emailInput = document.getElementById("floating-email") as HTMLInputElement || null;
-    const passwordInput = document.getElementById("floating-password") as HTMLInputElement || null;
-    const passwordRepeatInput = document.getElementById("floating-password-repeat") as HTMLInputElement || null;
-    const updateButton = document.getElementById("update-button") as HTMLButtonElement || null;
-    const logoutButton = document.getElementById("logout-button") as HTMLButtonElement || null;
+    const usernameContainer =
+      (document.getElementById("username-container") as HTMLSpanElement) ||
+      null;
+    const emailInput =
+      (document.getElementById("floating-email") as HTMLInputElement) || null;
+    const passwordInput =
+      (document.getElementById("floating-password") as HTMLInputElement) ||
+      null;
+    const passwordRepeatInput =
+      (document.getElementById(
+        "floating-password-repeat"
+      ) as HTMLInputElement) || null;
+    const updateButton =
+      (document.getElementById("update-button") as HTMLButtonElement) || null;
+    const logoutButton =
+      (document.getElementById("logout-button") as HTMLButtonElement) || null;
 
-    if (!usernameContainer || !emailInput || !passwordInput || !passwordRepeatInput || !updateButton || !logoutButton) {
+    if (
+      !usernameContainer ||
+      !emailInput ||
+      !passwordInput ||
+      !passwordRepeatInput ||
+      !updateButton ||
+      !logoutButton
+    ) {
       console.error("Faltan elementos en el formulario.");
       return;
     }
@@ -97,8 +115,8 @@
       try {
         const response = await fetch("/api/auth/me", {
           headers: {
-            "Authorization": `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         const data = await response.json();
         if (response.ok && data.user) {
@@ -107,7 +125,7 @@
           currentUser = data.user;
         } else {
           console.error("Error al cargar datos del usuario:", data.error);
-          window.location.href = "/";
+          window.location.href = "/login";
         }
       } catch (error) {
         console.error("Error al cargar datos del usuario:", error);
@@ -125,7 +143,7 @@
           message: "Ingresa la nueva contraseña y confírmala",
           type: "error",
           dismissible: true,
-          icon: true
+          icon: true,
         });
         return;
       }
@@ -135,7 +153,7 @@
           message: "Las contraseñas no coinciden",
           type: "error",
           dismissible: true,
-          icon: true
+          icon: true,
         });
         return;
       }
@@ -146,7 +164,7 @@
           message: "No se pudo cargar la información del usuario",
           type: "error",
           dismissible: true,
-          icon: true
+          icon: true,
         });
         return;
       }
@@ -156,9 +174,9 @@
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `bearer ${token}`
+            Authorization: `bearer ${token}`,
           },
-          body: JSON.stringify({ password: newPassword })
+          body: JSON.stringify({ password: newPassword }),
         });
         if (resUpdate.ok) {
           window.toast({
@@ -166,19 +184,20 @@
             message: "Contraseña actualizada correctamente",
             type: "success",
             dismissible: true,
-            icon: true
+            icon: true,
           });
           passwordInput.value = "";
           passwordRepeatInput.value = "";
 
-          window.location.href = "/";
+          sessionStorage.removeItem("token");
+          window.location.href = "/login";
         } else {
           window.toast({
             title: "Error",
             message: "Error al actualizar la contraseña",
             type: "error",
             dismissible: true,
-            icon: true
+            icon: true,
           });
         }
       } catch (error) {
@@ -188,14 +207,14 @@
           message: "Error en la conexión con el servidor",
           type: "error",
           dismissible: true,
-          icon: true
+          icon: true,
         });
       }
     });
 
     logoutButton.addEventListener("click", () => {
       sessionStorage.removeItem("token");
-      window.location.href = "/";
+      window.location.href = "/login";
     });
   });
 </script>
