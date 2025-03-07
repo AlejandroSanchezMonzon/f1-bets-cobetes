@@ -50,7 +50,7 @@ export default function NextRaceCountdown() {
   }, [race?.raceDate]);
 
   return race ? (
-    <article className="flex flex-row items-center p-6 rounded-lg bg-gradient-to-r from-secondary via-footer to-accent shadow-lg">
+    <article className="flex flex-col items-center p-6 rounded-lg bg-gradient-to-r from-secondary via-footer to-accent shadow-lg sm:flex-row">
       <div className="flex-shrink-0">
         <img
           className="object-cover h-32 rounded-lg"
@@ -58,9 +58,9 @@ export default function NextRaceCountdown() {
           alt={race.raceName}
         />
       </div>
-      <div className="ml-6 flex flex-col">
-        <h2 className="text-2xl font-wide text-white">Próxima carrera</h2>
-        <p className="text-xl text-white">{race.raceName}</p>
+      <div className="mt-4 text-center sm:mt-0 sm:ml-6 sm:text-left">
+        <h2 className="text-2xl font-wide text-primary">Próxima carrera</h2>
+        <p className="text-xl text-primary">{race.raceName}</p>
         <p className="mt-2 text-3xl font-extrabold text-yellow-300">
           {countdown}
         </p>
