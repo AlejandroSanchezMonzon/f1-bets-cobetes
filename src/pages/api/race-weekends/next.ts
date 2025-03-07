@@ -26,7 +26,6 @@ export const GET: APIRoute = async () => {
             status: 200
         });
     } catch (error) {
-        console.error("Error in GET /api/race-weekends:", error);
         return res(JSON.stringify({ error: "Server error" }), { status: 500 });
     }
 };

@@ -5,15 +5,7 @@ import { res } from "@/utils/api";
 export const GET: APIRoute = async () => {
   try {
     const result = await db.execute({
-      sql: `SELECT
-              id,
-              round_number,
-              race_date,
-              race_name,
-              race_type,
-              created_at
-            FROM Race_Weekends
-            WHERE deleted_at IS NULL`,
+      sql: "SELECT id, round_number, race_date, race_name, race_type, created_at FROM race_weekends WHERE deleted_at IS NULL",
       args: [],
     });
 
@@ -21,7 +13,6 @@ export const GET: APIRoute = async () => {
       status: 200
     });
   } catch (error) {
-    console.error("Error in GET /api/race-weekends:", error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };

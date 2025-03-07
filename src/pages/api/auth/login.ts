@@ -7,7 +7,6 @@ import { res } from "@/utils/api";
 export const POST: APIRoute = async ({ request }) => {
   try {
     const { email, password } = await request.json();
-
     if (!email || !password) {
       return res(JSON.stringify({ error: "Missing fields" }), { status: 400 });
     }
@@ -17,7 +16,6 @@ export const POST: APIRoute = async ({ request }) => {
       args: [email],
     });
     const user = result.rows.length > 0 ? result.rows[0] : null;
-
     if (!user) {
       return res(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
     }
@@ -27,7 +25,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const valid = await bcrypt.compare(password, user.password);
-
     if (!valid) {
       return res(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
     }
@@ -35,10 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
     const token = jwt.sign({ userId: user.id }, import.meta.env.JWT_SECRET!, { expiresIn: "1d" });
 
     return res(JSON.stringify({ token }), { status: 200 });
-
   } catch (error) {
-    console.error(error);
-
-    return res(JSON.stringify({ error: "Server Error: " + error}), { status: 500 });
+    return res(JSON.stringify({ error: "Server Error" }), { status: 500 });
   }
 };

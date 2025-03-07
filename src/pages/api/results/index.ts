@@ -9,26 +9,17 @@ export const GET: APIRoute = async ({ request }) => {
   if (!adminId) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
+
   try {
     const result = await db.execute({
-      sql: `SELECT
-              race_weekend_id,
-              sunday_first,
-              sunday_second,
-              sunday_third,
-              sprint_first,
-              sprint_second,
-              sprint_third,
-              created_at
-            FROM Results
-            WHERE deleted_at IS NULL`,
+      sql: "SELECT race_weekend_id, sunday_first, sunday_second, sunday_third, sprint_first, sprint_second, sprint_third, created_at FROM Results WHERE deleted_at IS NULL",
       args: [],
     });
+
     return res(JSON.stringify({ results: result.rows }), {
       status: 200
     });
   } catch (error) {
-    console.error("Error in GET /api/results:", error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };
@@ -39,6 +30,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!adminId) {
     return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
+
   try {
     const {
       race_weekend_id,
@@ -47,7 +39,7 @@ export const POST: APIRoute = async ({ request }) => {
       sunday_third,
       sprint_first,
       sprint_second,
-      sprint_third,
+      sprint_third
     } = await request.json();
 
     if (!race_weekend_id || !sunday_first || !sunday_second || !sunday_third) {
@@ -55,15 +47,11 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     await db.execute({
-      sql: `INSERT INTO Results (
-              race_weekend_id,
-              sunday_first,
-              sunday_second,
-              sunday_third,
-              sprint_first,
-              sprint_second,
-              sprint_third
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      sql: `
+        INSERT INTO Results
+          (race_weekend_id, sunday_first, sunday_second, sunday_third, sprint_first, sprint_second, sprint_third)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `,
       args: [
         race_weekend_id,
         sunday_first,
@@ -71,13 +59,12 @@ export const POST: APIRoute = async ({ request }) => {
         sunday_third,
         sprint_first || null,
         sprint_second || null,
-        sprint_third || null,
-      ],
+        sprint_third || null
+      ]
     });
 
     return res(JSON.stringify({ message: "Result created" }), { status: 201 });
   } catch (error) {
-    console.error("Error in POST /api/results:", error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };

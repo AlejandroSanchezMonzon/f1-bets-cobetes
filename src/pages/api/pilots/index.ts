@@ -10,10 +10,9 @@ export const GET: APIRoute = async () => {
     });
 
     return res(JSON.stringify({ pilots: result.rows }), {
-      status: 200
+      status: 200,
     });
   } catch (error) {
-    console.error("Error in GET /api/pilots:", error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };

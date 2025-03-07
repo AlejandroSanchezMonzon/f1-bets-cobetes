@@ -4,9 +4,8 @@ import { res } from "@/utils/api";
 
 export const GET: APIRoute = async ({ params }) => {
   const { id } = params;
-
   if (!id) {
-    return res(JSON.stringify({ error: "Invalid pilot id" }), { status: 400 });
+    return res(JSON.stringify({ error: "Missing pilot id" }), { status: 400 });
   }
 
   try {
@@ -14,17 +13,14 @@ export const GET: APIRoute = async ({ params }) => {
       sql: "SELECT id, name, nationality FROM Pilots WHERE id = ? AND deleted_at IS NULL",
       args: [id],
     });
-
     if (result.rows.length === 0) {
       return res(JSON.stringify({ error: "Pilot not found" }), { status: 404 });
     }
 
-    const pilot = result.rows[0];
-    return res(JSON.stringify({ pilot }), {
+    return res(JSON.stringify({ pilot: result.rows[0] }), {
       status: 200
     });
   } catch (error) {
-    console.error("Error in GET /api/pilots/:id:", error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };
