@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ params, request }) => {
 
   try {
     const result = await db.execute({
-      sql: "SELECT race_weekend_id, position_first, position_second, position_third created_at FROM Results WHERE race_weekend_id = ? AND deleted_at IS NULL",
+      sql: "SELECT * FROM Results WHERE race_weekend_id = ? AND deleted_at IS NULL",
       args: [race_weekend_id as string],
     });
     if (result.rows.length === 0) {
@@ -19,6 +19,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       status: 200
     });
   } catch (error) {
+    console.log(error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };

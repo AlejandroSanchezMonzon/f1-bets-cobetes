@@ -47,7 +47,7 @@ export const POST: APIRoute = async ({ request }) => {
       sql: `
         INSERT INTO Results
           (race_weekend_id, position_first, position_second, position_third)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?)
       `,
       args: [
         race_weekend_id,
@@ -59,6 +59,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     return res(JSON.stringify({ message: "Resultado creado" }), { status: 201 });
   } catch (error) {
-    return res(JSON.stringify({ error: "Server error" }), { status: 500 });
+    return res(JSON.stringify({ error: "Server error" + error }), { status: 500 });
   }
 };
