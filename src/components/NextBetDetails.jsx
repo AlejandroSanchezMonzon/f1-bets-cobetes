@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Spinner from "@/components/Spinner";
 
 function weatherCodeToText(code) {
   const mapping = {
@@ -38,8 +39,8 @@ const weatherIcons = {
   "Clear sky": "/icons/sunny.svg",
   "Mainly clear": "/icons/sunny.svg",
   "Partly cloudy": "/icons/partly-cloudy.svg",
-  "Overcast": "/icons/cloudy.svg",
-  "Fog": "/icons/fog.svg",
+  Overcast: "/icons/cloudy.svg",
+  Fog: "/icons/fog.svg",
   "Depositing rime fog": "/icons/fog.svg",
   "Light drizzle": "/icons/rain.svg",
   "Moderate drizzle": "/icons/rain.svg",
@@ -60,7 +61,7 @@ const weatherIcons = {
   "Violent rain showers": "/icons/heavy-rain.svg",
   "Slight snow showers": "/icons/snow.svg",
   "Heavy snow showers": "/icons/snow.svg",
-  "Thunderstorm": "/icons/thunderstorm.svg",
+  Thunderstorm: "/icons/thunderstorm.svg",
   "Thunderstorm with slight hail": "/icons/thunderstorm.svg",
   "Thunderstorm with heavy hail": "/icons/thunderstorm.svg",
 };
@@ -257,7 +258,7 @@ export default function NextBetDetails() {
   };
 
   if (!raceData) {
-    return <div>Cargando los datos de la siguiente carrera...</div>;
+    return <Spinner />;
   }
 
   return (
@@ -282,7 +283,8 @@ export default function NextBetDetails() {
               <img
                 src={weatherIcons[weatherData.conditionText]}
                 alt={weatherData.conditionText}
-                className="w-12 h-12"
+                title={weatherData.conditionText}
+                className="w-12 h-12 cursor-help"
               />
             ) : (
               weatherData && (
