@@ -6,9 +6,6 @@ import { checkAdmin } from "@/utils/auth";
 export const POST: APIRoute = async ({ request }) => {
     const authHeader = request.headers.get("Authorization");
     const adminId = await checkAdmin(authHeader);
-
-    console.log("adminId", adminId);
-
     if (!adminId) {
         return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
     }
