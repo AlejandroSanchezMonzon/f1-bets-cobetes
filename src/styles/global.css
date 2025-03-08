@@ -1,74 +1,75 @@
 @font-face {
-    font-family: "F1 Regular";
-    src: url("/fonts/Formula1-Regular.woff2") format("woff2");
+  font-family: "F1 Regular";
+  src: url("/fonts/Formula1-Regular.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "F1 Bold";
-    src: url("/fonts/Formula1-Bold.woff2") format("woff2");
+  font-family: "F1 Bold";
+  src: url("/fonts/Formula1-Bold.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "F1 Italic";
-    src: url("/fonts/Formula1-Italic.woff2") format("woff2");
+  font-family: "F1 Italic";
+  src: url("/fonts/Formula1-Italic.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "F1 Black";
-    src: url("/fonts/Formula1-Black.woff2") format("woff2");
+  font-family: "F1 Black";
+  src: url("/fonts/Formula1-Black.woff2") format("woff2");
 }
 
 @font-face {
-    font-family: "F1 Wide";
-    src: url("/fonts/Formula1-Wide.woff2") format("woff2");
+  font-family: "F1 Wide";
+  src: url("/fonts/Formula1-Wide.woff2") format("woff2");
 }
 
 :root {
-    color-scheme: dark light;
+  color-scheme: dark light;
 }
 
 ::selection {
-    background-color: #294643;
-    color: #fafafa;
+  background-color: #294643;
+  color: #fafafa;
 }
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-    font-family: "F1 Regular", sans-serif;
-    accent-color: #294643;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  font-family: "F1 Regular", sans-serif;
+  accent-color: #294643;
+  user-select: none;
 }
 
 main {
-    min-height: 75vh;
-    min-width: 75vw;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 0rem;
+  min-height: 75vh;
+  min-width: 75vw;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0rem;
 }
 
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #fafafa;
-    --color-secondary: #0a0a0a;
-    --color-accent: #294643;
-    --color-footer: #171717;
+  --color-primary: #fafafa;
+  --color-secondary: #0a0a0a;
+  --color-accent: #294643;
+  --color-footer: #171717;
 
-    --font-sans: 'F1 Regular', sans-serif;
-    --font-bold: 'F1 Bold', sans-serif;
-    --font-italic: 'F1 Italic', sans-serif;
-    --font-black: 'F1 Black', sans-serif;
-    --font-wide: 'F1 Wide', sans-serif;
+  --font-sans: "F1 Regular", sans-serif;
+  --font-bold: "F1 Bold", sans-serif;
+  --font-italic: "F1 Italic", sans-serif;
+  --font-black: "F1 Black", sans-serif;
+  --font-wide: "F1 Wide", sans-serif;
 }
 
 @media (max-width: 768px) {
-    main {
-        padding: 2rem 0rem;
-    }
+  main {
+    padding: 2rem 0rem;
+  }
 }
