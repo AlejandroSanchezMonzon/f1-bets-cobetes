@@ -7,12 +7,12 @@ export const GET: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get("Authorization");
   const adminId = await checkAdmin(authHeader);
   if (!adminId) {
-    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
   }
 
   try {
     const result = await db.execute({
-      sql: "SELECT race_weekend_id, sunday_first, sunday_second, sunday_third, sprint_first, sprint_second, sprint_third, created_at FROM Results WHERE deleted_at IS NULL",
+      sql: "SELECT race_weekend_id, position_first, position_second, position_third created_at FROM Results WHERE deleted_at IS NULL",
       args: [],
     });
 
@@ -28,42 +28,36 @@ export const POST: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get("Authorization");
   const adminId = await checkAdmin(authHeader);
   if (!adminId) {
-    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
   }
 
   try {
     const {
       race_weekend_id,
-      sunday_first,
-      sunday_second,
-      sunday_third,
-      sprint_first,
-      sprint_second,
-      sprint_third
+      position_first,
+      position_second,
+      position_third
     } = await request.json();
 
-    if (!race_weekend_id || !sunday_first || !sunday_second || !sunday_third) {
-      return res(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
+    if (!race_weekend_id || !position_first || !position_second || !position_third) {
+      return res(JSON.stringify({ error: "Campos requeridos faltantes" }), { status: 400 });
     }
 
     await db.execute({
       sql: `
         INSERT INTO Results
-          (race_weekend_id, sunday_first, sunday_second, sunday_third, sprint_first, sprint_second, sprint_third)
+          (race_weekend_id, position_first, position_second, position_third)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `,
       args: [
         race_weekend_id,
-        sunday_first,
-        sunday_second,
-        sunday_third,
-        sprint_first || null,
-        sprint_second || null,
-        sprint_third || null
+        position_first,
+        position_second,
+        position_third
       ]
     });
 
-    return res(JSON.stringify({ message: "Result created" }), { status: 201 });
+    return res(JSON.stringify({ message: "Resultado creado" }), { status: 201 });
   } catch (error) {
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }

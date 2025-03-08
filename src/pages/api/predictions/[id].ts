@@ -1,16 +1,18 @@
 import type { APIRoute } from "astro";
 import { db } from "@/lib/turso";
 import { res } from "@/utils/api";
+import jwt from "jsonwebtoken";
 
 function validateUser(authHeader: string | null): number | null {
   if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) return null;
 
   const token = authHeader.slice(7).trim();
+
   const secretKey = import.meta.env.JWT_SECRET;
-  if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
+  if (!secretKey) throw new Error("Token secreto de autenticación no encontrado");
 
   try {
-    const decoded = require("jsonwebtoken").verify(token, secretKey) as { userId: number };
+    const decoded = jwt.verify(token, secretKey) as { userId: number };
 
     return decoded.userId;
   } catch (error) {
@@ -24,21 +26,21 @@ export const GET: APIRoute = async ({ params, request }) => {
   const authHeader = request.headers.get("Authorization");
   const userId = validateUser(authHeader);
   if (!userId) {
-    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
   }
 
   try {
     const result = await db.execute({
-      sql: "SELECT * FROM Predictions WHERE id = ?",
+      sql: "SELECT * FROM Predictions WHERE race_weekend_id = ?",
       args: [id as string],
     });
     if (result.rows.length === 0) {
-      return res(JSON.stringify({ error: "Prediction not found" }), { status: 404 });
+      return res(JSON.stringify({ error: "Predicciones no encontradas" }), { status: 404 });
     }
 
     const prediction = result.rows[0];
     if (prediction.user_id !== userId) {
-      return res(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+      return res(JSON.stringify({ error: "Operación prohibida" }), { status: 403 });
     }
 
     return res(JSON.stringify({ prediction }), {
@@ -54,7 +56,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   const authHeader = request.headers.get("Authorization");
   const userId = validateUser(authHeader);
   if (!userId) {
-    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
   }
 
   try {
@@ -63,32 +65,26 @@ export const PATCH: APIRoute = async ({ params, request }) => {
       args: [id as string],
     });
     if (fetchResult.rows.length === 0) {
-      return res(JSON.stringify({ error: "Prediction not found" }), { status: 404 });
+      return res(JSON.stringify({ error: "Predicciones no encontradas" }), { status: 404 });
     }
 
     const prediction = fetchResult.rows[0];
     if (prediction.user_id !== userId) {
-      return res(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+      return res(JSON.stringify({ error: "Operación prohibida" }), { status: 403 });
     }
 
     const {
-      sunday_predicted_first,
-      sunday_predicted_second,
-      sunday_predicted_third,
-      sprint_predicted_first,
-      sprint_predicted_second,
-      sprint_predicted_third,
+      position_predicted_first,
+      position_predicted_second,
+      position_predicted_third
     } = await request.json();
     let fields: string[] = [];
     let args: any[] = [];
-    if (sunday_predicted_first !== undefined) { fields.push("sunday_predicted_first = ?"); args.push(sunday_predicted_first); }
-    if (sunday_predicted_second !== undefined) { fields.push("sunday_predicted_second = ?"); args.push(sunday_predicted_second); }
-    if (sunday_predicted_third !== undefined) { fields.push("sunday_predicted_third = ?"); args.push(sunday_predicted_third); }
-    if (sprint_predicted_first !== undefined) { fields.push("sprint_predicted_first = ?"); args.push(sprint_predicted_first); }
-    if (sprint_predicted_second !== undefined) { fields.push("sprint_predicted_second = ?"); args.push(sprint_predicted_second); }
-    if (sprint_predicted_third !== undefined) { fields.push("sprint_predicted_third = ?"); args.push(sprint_predicted_third); }
+    if (position_predicted_first !== undefined) { fields.push("position_predicted_first = ?"); args.push(position_predicted_first); }
+    if (position_predicted_second !== undefined) { fields.push("position_predicted_second = ?"); args.push(position_predicted_second); }
+    if (position_predicted_third !== undefined) { fields.push("position_predicted_third = ?"); args.push(position_predicted_third); }
     if (fields.length === 0) {
-      return res(JSON.stringify({ error: "No fields to update" }), { status: 400 });
+      return res(JSON.stringify({ error: "No hay campos para actualizar" }), { status: 400 });
     }
 
     args.push(id);
@@ -97,7 +93,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
     await db.execute({ sql: updateQuery, args });
 
-    return res(JSON.stringify({ message: "Prediction updated" }), { status: 200 });
+    return res(JSON.stringify({ message: "Predicción actualizada" }), { status: 200 });
   } catch (error) {
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }

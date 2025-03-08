@@ -6,14 +6,17 @@ import { checkAdmin } from "@/utils/auth";
 export const POST: APIRoute = async ({ request }) => {
     const authHeader = request.headers.get("Authorization");
     const adminId = await checkAdmin(authHeader);
+
+    console.log("adminId", adminId);
+
     if (!adminId) {
-        return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+        return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
     }
 
     try {
         const { race_weekend_id, positions } = await request.json();
         if (!race_weekend_id || !Array.isArray(positions) || positions.length !== 20) {
-            return res(JSON.stringify({ error: "Missing or invalid fields" }), { status: 400 });
+            return res(JSON.stringify({ error: "Campos faltantes o inválidos" }), { status: 400 });
         }
         const sql = `
       INSERT INTO qualifying (
@@ -32,7 +35,7 @@ export const POST: APIRoute = async ({ request }) => {
             args: [race_weekend_id, ...positions],
         });
 
-        return res(JSON.stringify({ message: "Qualifying data inserted" }), { status: 201 });
+        return res(JSON.stringify({ message: "Datos de Qualy insertados" }), { status: 201 });
     } catch (error) {
         return res(JSON.stringify({ error: "Server error" }), { status: 500 });
     }
