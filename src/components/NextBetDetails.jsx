@@ -39,8 +39,8 @@ const weatherIcons = {
   "Clear sky": "/icons/sunny.svg",
   "Mainly clear": "/icons/sunny.svg",
   "Partly cloudy": "/icons/partly-cloudy.svg",
-  Overcast: "/icons/cloudy.svg",
-  Fog: "/icons/fog.svg",
+  "Overcast": "/icons/cloudy.svg",
+  "Fog": "/icons/fog.svg",
   "Depositing rime fog": "/icons/fog.svg",
   "Light drizzle": "/icons/rain.svg",
   "Moderate drizzle": "/icons/rain.svg",
@@ -61,7 +61,7 @@ const weatherIcons = {
   "Violent rain showers": "/icons/heavy-rain.svg",
   "Slight snow showers": "/icons/snow.svg",
   "Heavy snow showers": "/icons/snow.svg",
-  Thunderstorm: "/icons/thunderstorm.svg",
+  "Thunderstorm": "/icons/thunderstorm.svg",
   "Thunderstorm with slight hail": "/icons/thunderstorm.svg",
   "Thunderstorm with heavy hail": "/icons/thunderstorm.svg",
 };
@@ -73,12 +73,9 @@ export default function NextBetDetails() {
   const [prediction, setPrediction] = useState(null);
   const [canPredict, setCanPredict] = useState(false);
   const [formData, setFormData] = useState({
-    sunday_predicted_first: "",
-    sunday_predicted_second: "",
-    sunday_predicted_third: "",
-    sprint_predicted_first: "",
-    sprint_predicted_second: "",
-    sprint_predicted_third: "",
+    position_predicted_first: "",
+    position_predicted_second: "",
+    position_predicted_third: "",
   });
 
   useEffect(() => {
@@ -96,6 +93,8 @@ export default function NextBetDetails() {
 
   useEffect(() => {
     if (!raceData) return;
+
+    console.log(raceData);
 
     fetch(`/api/qualifying/${raceData.id}`)
       .then((res) => res.json())
@@ -156,9 +155,10 @@ export default function NextBetDetails() {
         console.error("Error al obtener la geolocalización del circuito:", err)
       );
 
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
+
     if (token) {
-      fetch(`/api/predictions?race_weekend_id=${raceData.id}`, {
+      fetch(`/api/predictions/${raceData.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
@@ -167,15 +167,9 @@ export default function NextBetDetails() {
             const userPrediction = data.predictions[0];
             setPrediction(userPrediction);
             setFormData({
-              sunday_predicted_first: userPrediction.sunday_predicted_first,
-              sunday_predicted_second: userPrediction.sunday_predicted_second,
-              sunday_predicted_third: userPrediction.sunday_predicted_third,
-              sprint_predicted_first:
-                userPrediction.sprint_predicted_first || "",
-              sprint_predicted_second:
-                userPrediction.sprint_predicted_second || "",
-              sprint_predicted_third:
-                userPrediction.sprint_predicted_third || "",
+              position_predicted_first: userPrediction.position_predicted_first,
+              position_predicted_second: userPrediction.position_predicted_second,
+              position_predicted_third: userPrediction.position_predicted_third
             });
           }
         })
@@ -201,7 +195,7 @@ export default function NextBetDetails() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (!token) return;
     const method = prediction ? "PATCH" : "POST";
     const url = prediction
@@ -209,15 +203,10 @@ export default function NextBetDetails() {
       : "/api/predictions";
     const body = {
       race_weekend_id: raceData.id,
-      sunday_predicted_first: formData.sunday_predicted_first,
-      sunday_predicted_second: formData.sunday_predicted_second,
-      sunday_predicted_third: formData.sunday_predicted_third,
+      position_predicted_first: formData.position_predicted_first,
+      position_predicted_second: formData.position_predicted_second,
+      position_predicted_third: formData.position_predicted_third,
     };
-    if (raceData.race_type === "sprint") {
-      body.sprint_predicted_first = formData.sprint_predicted_first;
-      body.sprint_predicted_second = formData.sprint_predicted_second;
-      body.sprint_predicted_third = formData.sprint_predicted_third;
-    }
     try {
       const resUpdate = await fetch(url, {
         method,
@@ -299,7 +288,7 @@ export default function NextBetDetails() {
               {Array.from({ length: 20 }, (_, index) => {
                 const pos = index + 1;
                 const pilotId = qualyData[`position${pos}`];
-                const pilotName = pilotMapping[pilotId] || `Pilot ${pilotId}`;
+                const pilotName = pilotMapping[pilotId] || `Piloto ${pilotId}`;
                 return (
                   <div key={pos} className="flex items-center">
                     <span className="font-bold mr-2">Pos {pos}:</span>
@@ -322,8 +311,8 @@ export default function NextBetDetails() {
               <label className="block text-sm font-medium">1ª Posición</label>
               <input
                 type="text"
-                name="sunday_predicted_first"
-                value={formData.sunday_predicted_first}
+                name="position_predicted_first"
+                value={formData.position_predicted_first}
                 onChange={handleChange}
                 className="w-full border border-primary bg-transparent p-2 rounded text-primary"
                 required
@@ -333,8 +322,8 @@ export default function NextBetDetails() {
               <label className="block text-sm font-medium">2ª Posición</label>
               <input
                 type="text"
-                name="sunday_predicted_second"
-                value={formData.sunday_predicted_second}
+                name="position_predicted_second"
+                value={formData.position_predicted_second}
                 onChange={handleChange}
                 className="w-full border border-primary bg-transparent p-2 rounded text-primary"
                 required
@@ -344,53 +333,13 @@ export default function NextBetDetails() {
               <label className="block text-sm font-medium">3ª Pisición</label>
               <input
                 type="text"
-                name="sunday_predicted_third"
-                value={formData.sunday_predicted_third}
+                name="position_predicted_third"
+                value={formData.position_predicted_third}
                 onChange={handleChange}
                 className="w-full border border-primary bg-transparent p-2 rounded text-primary"
                 required
               />
             </div>
-            {raceData.race_type === "sprint" && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Sprint - 1ª Posición
-                  </label>
-                  <input
-                    type="text"
-                    name="sprint_predicted_first"
-                    value={formData.sprint_predicted_first}
-                    onChange={handleChange}
-                    className="w-full border border-primary bg-transparent p-2 rounded text-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Sprint - 2ª Posición
-                  </label>
-                  <input
-                    type="text"
-                    name="sprint_predicted_second"
-                    value={formData.sprint_predicted_second}
-                    onChange={handleChange}
-                    className="w-full border border-primary bg-transparent p-2 rounded text-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Sprint - 3ª Posición
-                  </label>
-                  <input
-                    type="text"
-                    name="sprint_predicted_third"
-                    value={formData.sprint_predicted_third}
-                    onChange={handleChange}
-                    className="w-full border border-primary bg-transparent p-2 rounded text-primary"
-                  />
-                </div>
-              </>
-            )}
             <button
               type="submit"
               className="w-full bg-accent text-primary py-2 rounded hover:bg-opacity-90"
