@@ -100,8 +100,12 @@ export default function NextBetDetails() {
         if (data.pilots && Array.isArray(data.pilots)) {
           const mapping = {};
           data.pilots.forEach((pilot) => {
-            mapping[pilot.id] = pilot.name;
+            mapping[pilot.id] = {
+              name: pilot.name,
+              nationality: pilot.nationality,
+            };
           });
+
           setPilotMapping(mapping);
         }
       })
@@ -336,7 +340,8 @@ export default function NextBetDetails() {
               {Array.from({ length: 20 }, (_, index) => {
                 const pos = index + 1;
                 const pilotId = qualyData[`position${pos}`];
-                const pilotName = pilotMapping[pilotId] || `Piloto ${pilotId}`;
+                const pilotName =
+                  pilotMapping[pilotId]?.name || `Piloto ${pilotId}`;
                 return (
                   <div key={pos} className="flex items-center text-xs w-full">
                     <span className="font-bold mr-2 text-gray-400">
@@ -361,55 +366,103 @@ export default function NextBetDetails() {
               <label className="block text-sm mb-2 font-medium">
                 1ª Posición
               </label>
-              <select
-                name="position_predicted_first"
-                value={formData.position_predicted_first}
-                onChange={handleChange}
-                className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
-              >
-                <option value="">Seleccione piloto</option>
-                {Object.entries(pilotMapping).map(([id, name]) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center">
+                <select
+                  name="position_predicted_first"
+                  value={formData.position_predicted_first}
+                  onChange={handleChange}
+                  className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+                >
+                  <option value="">Seleccione piloto</option>
+                  {Object.entries(pilotMapping).map(([id, pilot]) => (
+                    <option key={id} value={id}>
+                      {pilot.name}
+                    </option>
+                  ))}
+                </select>
+                {formData.position_predicted_first &&
+                  pilotMapping[formData.position_predicted_first] && (
+                    <img
+                      src={`/flags/${
+                        pilotMapping[formData.position_predicted_first]
+                          .nationality
+                      }.png`}
+                      alt={
+                        pilotMapping[formData.position_predicted_first]
+                          .nationality
+                      }
+                      className="w-10 h-6 ml-4"
+                    />
+                  )}
+              </div>
             </div>
             <div>
               <label className="block text-sm mb-2 font-medium">
                 2ª Posición
               </label>
-              <select
-                name="position_predicted_second"
-                value={formData.position_predicted_second}
-                onChange={handleChange}
-                className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
-              >
-                <option value="">Seleccione piloto</option>
-                {Object.entries(pilotMapping).map(([id, name]) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center">
+                <select
+                  name="position_predicted_second"
+                  value={formData.position_predicted_second}
+                  onChange={handleChange}
+                  className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+                >
+                  <option value="">Seleccione piloto</option>
+                  {Object.entries(pilotMapping).map(([id, pilot]) => (
+                    <option key={id} value={id}>
+                      {pilot.name}
+                    </option>
+                  ))}
+                </select>
+                {formData.position_predicted_second &&
+                  pilotMapping[formData.position_predicted_second] && (
+                    <img
+                      src={`/flags/${
+                        pilotMapping[formData.position_predicted_second]
+                          .nationality
+                      }.png`}
+                      alt={
+                        pilotMapping[formData.position_predicted_second]
+                          .nationality
+                      }
+                      className="w-10 h-6 ml-4"
+                    />
+                  )}
+              </div>
             </div>
             <div>
               <label className="block text-sm mb-2 font-medium">
                 3ª Posición
               </label>
-              <select
-                name="position_predicted_third"
-                value={formData.position_predicted_third}
-                onChange={handleChange}
-                className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
-              >
-                <option value="">Seleccione piloto</option>
-                {Object.entries(pilotMapping).map(([id, name]) => (
-                  <option key={id} value={id}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center">
+                <select
+                  name="position_predicted_third"
+                  value={formData.position_predicted_third}
+                  onChange={handleChange}
+                  className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+                >
+                  <option value="">Seleccione piloto</option>
+                  {Object.entries(pilotMapping).map(([id, pilot]) => (
+                    <option key={id} value={id}>
+                      {pilot.name}
+                    </option>
+                  ))}
+                </select>
+                {formData.position_predicted_third &&
+                  pilotMapping[formData.position_predicted_third] && (
+                    <img
+                      src={`/flags/${
+                        pilotMapping[formData.position_predicted_third]
+                          .nationality
+                      }.png`}
+                      alt={
+                        pilotMapping[formData.position_predicted_third]
+                          .nationality
+                      }
+                      className="w-10 h-6 ml-4"
+                    />
+                  )}
+              </div>
             </div>
             <button
               type="submit"
