@@ -39,8 +39,8 @@ const weatherIcons = {
   "Clear sky": "/icons/sunny.svg",
   "Mainly clear": "/icons/sunny.svg",
   "Partly cloudy": "/icons/partly-cloudy.svg",
-  "Overcast": "/icons/cloudy.svg",
-  "Fog": "/icons/fog.svg",
+  Overcast: "/icons/cloudy.svg",
+  Fog: "/icons/fog.svg",
   "Depositing rime fog": "/icons/fog.svg",
   "Light drizzle": "/icons/rain.svg",
   "Moderate drizzle": "/icons/rain.svg",
@@ -61,13 +61,14 @@ const weatherIcons = {
   "Violent rain showers": "/icons/heavy-rain.svg",
   "Slight snow showers": "/icons/snow.svg",
   "Heavy snow showers": "/icons/snow.svg",
-  "Thunderstorm": "/icons/thunderstorm.svg",
+  Thunderstorm: "/icons/thunderstorm.svg",
   "Thunderstorm with slight hail": "/icons/thunderstorm.svg",
   "Thunderstorm with heavy hail": "/icons/thunderstorm.svg",
 };
 
 export default function NextBetDetails() {
   const [raceData, setRaceData] = useState(null);
+  const [pilotMapping, setPilotMapping] = useState({});
   const [qualyData, setQualyData] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
   const [prediction, setPrediction] = useState(null);
@@ -77,6 +78,7 @@ export default function NextBetDetails() {
     position_predicted_second: "",
     position_predicted_third: "",
   });
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     fetch("/api/race-weekends/next")
@@ -92,9 +94,24 @@ export default function NextBetDetails() {
   }, []);
 
   useEffect(() => {
-    if (!raceData) return;
+    fetch("/api/pilots")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.pilots && Array.isArray(data.pilots)) {
+          const mapping = {};
+          data.pilots.forEach((pilot) => {
+            mapping[pilot.id] = pilot.name;
+          });
+          setPilotMapping(mapping);
+        }
+      })
+      .catch((err) =>
+        console.error("Error al obtener la lista de pilotos:", err)
+      );
+  }, []);
 
-    console.log(raceData);
+  useEffect(() => {
+    if (!raceData) return;
 
     fetch(`/api/qualifying/${raceData.id}`)
       .then((res) => res.json())
@@ -156,20 +173,21 @@ export default function NextBetDetails() {
       );
 
     const token = sessionStorage.getItem("token");
-
     if (token) {
       fetch(`/api/predictions/${raceData.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.predictions && data.predictions.length > 0) {
-            const userPrediction = data.predictions[0];
+          if (data.prediction) {
+            const userPrediction = data.prediction;
+
             setPrediction(userPrediction);
             setFormData({
               position_predicted_first: userPrediction.position_predicted_first,
-              position_predicted_second: userPrediction.position_predicted_second,
-              position_predicted_third: userPrediction.position_predicted_third
+              position_predicted_second:
+                userPrediction.position_predicted_second,
+              position_predicted_third: userPrediction.position_predicted_third,
             });
           }
         })
@@ -183,10 +201,30 @@ export default function NextBetDetails() {
     if (!raceData) return;
     const raceStart = new Date(raceData.race_date);
     const predictionCloseTime = new Date(
-      raceStart.getTime() - 12 * 60 * 60 * 1000
+      raceStart.getTime() - 6 * 60 * 60 * 1000
     );
     setCanPredict(new Date() < predictionCloseTime && qualyData !== null);
   }, [raceData, qualyData]);
+
+  useEffect(() => {
+    const {
+      position_predicted_first,
+      position_predicted_second,
+      position_predicted_third,
+    } = formData;
+    if (
+      position_predicted_first &&
+      position_predicted_second &&
+      position_predicted_third &&
+      position_predicted_first !== position_predicted_second &&
+      position_predicted_first !== position_predicted_third &&
+      position_predicted_second !== position_predicted_third
+    ) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -207,6 +245,7 @@ export default function NextBetDetails() {
       position_predicted_second: formData.position_predicted_second,
       position_predicted_third: formData.position_predicted_third,
     };
+
     try {
       const resUpdate = await fetch(url, {
         method,
@@ -225,6 +264,10 @@ export default function NextBetDetails() {
           dismissible: true,
           icon: true,
         });
+
+        setInterval(() => {
+          window.location.reload();
+        }, 1500);
       } else {
         window.toast({
           title: "Error",
@@ -252,47 +295,54 @@ export default function NextBetDetails() {
 
   return (
     <div className="p-4 rounded-md shadow-md bg-secondary text-primary">
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="flex flex-col items-center">
-          <img
-            src={`/circuits/${raceData.id}.png`}
-            alt={raceData.race_name}
-            className="w-40 h-auto mb-2"
-          />
-          <h2 className="text-xl font-bold mt-2">{raceData.race_name}</h2>
-        </div>
-        <div className="mt-4 md:mt-0 text-center">
-          <p className="text-lg font-semibold">
-            {weatherData
-              ? `Temp: ${weatherData.temp} °C`
-              : "Sin datos meteorológicos"}
-          </p>
-          <div className="flex items-center justify-center mt-2">
-            {weatherData && weatherIcons[weatherData.conditionText] ? (
-              <img
-                src={weatherIcons[weatherData.conditionText]}
-                alt={weatherData.conditionText}
-                title={weatherData.conditionText}
-                className="w-12 h-12 cursor-help"
-              />
-            ) : (
-              weatherData && (
-                <span className="text-sm text-gray-400">
-                  {weatherData.conditionText}
-                </span>
-              )
-            )}
+      <div className="flex flex-col">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+          <div className="flex items-center">
+            <img
+              src={`/circuits/${raceData.id}.png`}
+              alt={raceData.race_name}
+              className="w-40 h-auto mr-4"
+            />
+            <h2 className="text-xl font-bold w-75">{raceData.race_name}</h2>
           </div>
+          <div className="text-center border-primary border-2 p-2 rounded bg-gradient-to-br from-secondary via-footer to-secondary">
+            <p className="text-lg font-semibold">
+              {weatherData
+                ? `Temp: ${weatherData.temp} °C`
+                : "Sin datos meteorológicos"}
+            </p>
+            <div className="flex items-center justify-center mt-2">
+              {weatherData && weatherIcons[weatherData.conditionText] ? (
+                <img
+                  src={weatherIcons[weatherData.conditionText]}
+                  alt={weatherData.conditionText}
+                  title={weatherData.conditionText}
+                  className="w-12 h-12 cursor-help"
+                />
+              ) : (
+                weatherData && (
+                  <span className="text-sm text-gray-400">
+                    {weatherData.conditionText}
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6">
           {qualyData ? (
-            <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center px-6">
               {Array.from({ length: 20 }, (_, index) => {
                 const pos = index + 1;
                 const pilotId = qualyData[`position${pos}`];
                 const pilotName = pilotMapping[pilotId] || `Piloto ${pilotId}`;
                 return (
-                  <div key={pos} className="flex items-center">
-                    <span className="font-bold mr-2">Pos {pos}:</span>
-                    <span>{pilotName}</span>
+                  <div key={pos} className="flex items-center text-xs w-full">
+                    <span className="font-bold mr-2 text-gray-400">
+                      Pos {pos}:
+                    </span>
+                    <span className="text-gray-400">{pilotName}</span>
                   </div>
                 );
               })}
@@ -308,43 +358,67 @@ export default function NextBetDetails() {
         {canPredict ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium">1ª Posición</label>
-              <input
-                type="text"
+              <label className="block text-sm mb-2 font-medium">
+                1ª Posición
+              </label>
+              <select
                 name="position_predicted_first"
                 value={formData.position_predicted_first}
                 onChange={handleChange}
-                className="w-full border border-primary bg-transparent p-2 rounded text-primary"
-                required
-              />
+                className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+              >
+                <option value="">Seleccione piloto</option>
+                {Object.entries(pilotMapping).map(([id, name]) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
-              <label className="block text-sm font-medium">2ª Posición</label>
-              <input
-                type="text"
+              <label className="block text-sm mb-2 font-medium">
+                2ª Posición
+              </label>
+              <select
                 name="position_predicted_second"
                 value={formData.position_predicted_second}
                 onChange={handleChange}
-                className="w-full border border-primary bg-transparent p-2 rounded text-primary"
-                required
-              />
+                className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+              >
+                <option value="">Seleccione piloto</option>
+                {Object.entries(pilotMapping).map(([id, name]) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
-              <label className="block text-sm font-medium">3ª Pisición</label>
-              <input
-                type="text"
+              <label className="block text-sm mb-2 font-medium">
+                3ª Posición
+              </label>
+              <select
                 name="position_predicted_third"
                 value={formData.position_predicted_third}
                 onChange={handleChange}
-                className="w-full border border-primary bg-transparent p-2 rounded text-primary"
-                required
-              />
+                className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+              >
+                <option value="">Seleccione piloto</option>
+                {Object.entries(pilotMapping).map(([id, name]) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
             <button
               type="submit"
-              className="w-full bg-accent text-primary py-2 rounded hover:bg-opacity-90"
+              className={`w-100 text-primary bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center ${
+                isFormValid ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+              }`}
+              disabled={!isFormValid}
             >
-              Guardar predicción
+              {prediction ? "Actualizar predicción" : "Guardar predicción"}
             </button>
           </form>
         ) : (
