@@ -2,13 +2,13 @@
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2 max-w-none mb-5">
     <div>
       <label
-        for="race-type"
+        for="race-type-qualy"
         class="block mb-2 text-sm font-regular text-primary"
       >
         Seleccione el tipo de carrera
       </label>
       <select
-        id="race-type"
+        id="race-type-qualy"
         class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
       >
         <option value="">Seleccione el tipo de carrera</option>
@@ -18,11 +18,14 @@
     </div>
 
     <div>
-      <label for="race" class="block mb-2 text-sm font-regular text-primary">
+      <label
+        for="race-qualy"
+        class="block mb-2 text-sm font-regular text-primary"
+      >
         Seleccione la carrera *
       </label>
       <select
-        id="race"
+        id="race-qualy"
         class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
         required
       >
@@ -35,14 +38,14 @@
 
   <div
     class="grid grid-cols-1 gap-4 md:grid-cols-2 max-w-none mb-5"
-    id="drivers-container"
+    id="drivers-container-qualy"
   >
   </div>
 
   <div class="flex flex-col gap-4">
     <button
       type="submit"
-      id="submit-button"
+      id="submit-button-qualy"
       class="text-primary bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center cursor-auto"
       disabled
     >
@@ -53,16 +56,18 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const raceSelect = document.getElementById("race") as HTMLSelectElement;
+    const raceSelect = document.getElementById(
+      "race-qualy"
+    ) as HTMLSelectElement;
     const raceTypeSelect = document.getElementById(
-      "race-type"
+      "race-type-qualy"
     ) as HTMLSelectElement;
     const driversContainer = document.getElementById(
-      "drivers-container"
+      "drivers-container-qualy"
     ) as HTMLDivElement;
     const form = document.getElementById("qualy-form") as HTMLFormElement;
     const submitButton = document.getElementById(
-      "submit-button"
+      "submit-button-qualy"
     ) as HTMLButtonElement;
 
     let pilots: any = [];
@@ -133,6 +138,7 @@
       } else {
         submitButton.disabled = true;
         submitButton.classList.add("opacity-50", "cursor-not-allowed");
+        submitButton.classList.remove("cursor-pointer");
       }
     }
 
