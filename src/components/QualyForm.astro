@@ -1,0 +1,314 @@
+<form class="max-w-sm md:max-w-none" id="qualy-form">
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 max-w-none mb-5">
+    <div>
+      <label
+        for="race-type"
+        class="block mb-2 text-sm font-regular text-primary"
+      >
+        Seleccione el tipo de carrera
+      </label>
+      <select
+        id="race-type"
+        class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+      >
+        <option value="">Seleccione el tipo de carrera</option>
+        <option value="gp">Gran Premio</option>
+        <option value="sprint">Sprint</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="race" class="block mb-2 text-sm font-regular text-primary">
+        Seleccione la carrera *
+      </label>
+      <select
+        id="race"
+        class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+        required
+      >
+        <option value="">Seleccione la carrera</option>
+      </select>
+    </div>
+  </div>
+
+  <hr class="border border-footer mb-5" />
+
+  <div
+    class="grid grid-cols-1 gap-4 md:grid-cols-2 max-w-none mb-5"
+    id="drivers-container"
+  >
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <button
+      type="submit"
+      id="submit-button"
+      class="text-primary bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center cursor-auto"
+      disabled
+    >
+      Guardar Qualy
+    </button>
+  </div>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const raceSelect = document.getElementById("race") as HTMLSelectElement;
+    const raceTypeSelect = document.getElementById(
+      "race-type"
+    ) as HTMLSelectElement;
+    const driversContainer = document.getElementById(
+      "drivers-container"
+    ) as HTMLDivElement;
+    const form = document.getElementById("qualy-form") as HTMLFormElement;
+    const submitButton = document.getElementById(
+      "submit-button"
+    ) as HTMLButtonElement;
+
+    let pilots: any = [];
+    let currentQualy: any = null;
+    let isUpdateMode = false;
+
+    function createDriverSelect(position: number, prefillValue = "") {
+      const div = document.createElement("div");
+
+      const label = document.createElement("label");
+      label.innerText = "Posición " + position;
+      label.setAttribute("for", "driver-" + position);
+      label.className = "block mb-2 text-sm font-regular text-primary";
+
+      const select = document.createElement("select");
+      select.id = "driver-" + position;
+      select.name = "position" + position;
+      select.className =
+        "bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5";
+      select.required = true;
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.text = "Seleccione piloto";
+      select.appendChild(defaultOption);
+
+      pilots.forEach((pilot: any) => {
+        const option = document.createElement("option");
+        option.value = pilot.id;
+        option.text = pilot.name;
+        select.appendChild(option);
+      });
+
+      if (prefillValue) {
+        select.value = prefillValue;
+      }
+
+      select.addEventListener("change", () => {
+        toggleSubmitButton();
+      });
+
+      div.appendChild(label);
+      div.appendChild(select);
+      return div;
+    }
+
+    function validateForm() {
+      if (!raceSelect.value) return false;
+
+      let selectedPilots = [];
+      for (let i = 1; i <= 20; i++) {
+        const select = document.getElementById(
+          "driver-" + i
+        ) as HTMLSelectElement;
+        if (!select) return false;
+        if (select.value === "") return false;
+        selectedPilots.push(select.value);
+      }
+      const uniquePilots = new Set(selectedPilots);
+      return uniquePilots.size === selectedPilots.length;
+    }
+
+    function toggleSubmitButton() {
+      if (validateForm()) {
+        submitButton.disabled = false;
+        submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+        submitButton.classList.add("cursor-pointer");
+      } else {
+        submitButton.disabled = true;
+        submitButton.classList.add("opacity-50", "cursor-not-allowed");
+      }
+    }
+
+    let allRaces: any = [];
+    function loadRaces() {
+      fetch("/api/race-weekends")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.raceWeekends && Array.isArray(data.raceWeekends)) {
+            allRaces = data.raceWeekends;
+            filterRaces();
+          }
+        })
+        .catch((err) => console.error("Error al cargar las carreras:", err));
+    }
+
+    function loadPilots() {
+      fetch("/api/pilots")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.pilots && Array.isArray(data.pilots)) {
+            pilots = data.pilots;
+          }
+        })
+        .catch((err) => console.error("Error al cargar los pilotos:", err));
+    }
+
+    function filterRaces() {
+      raceSelect.innerHTML = "";
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.text = "Seleccione la carrera";
+      raceSelect.appendChild(defaultOption);
+
+      const selectedRaceType = raceTypeSelect.value;
+      const filteredRaces = selectedRaceType
+        ? allRaces.filter((race: any) => race.race_type === selectedRaceType)
+        : allRaces;
+
+      filteredRaces.forEach((race: any) => {
+        const option = document.createElement("option");
+        option.value = race.id;
+        option.text = `Ronda ${race.round_number}: ${race.race_name} (${race.race_type})`;
+        raceSelect.appendChild(option);
+      });
+    }
+
+    function loadQualy(raceId: string) {
+      fetch(`/api/qualifying/${raceId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.error && data.qualifying) {
+            currentQualy = data.qualifying;
+            isUpdateMode = true;
+            submitButton.textContent = "Actualizar Qualy";
+          } else {
+            currentQualy = null;
+            isUpdateMode = false;
+            submitButton.textContent = "Guardar Qualy";
+          }
+          populateDriverSelects();
+        })
+        .catch((err) => {
+          console.error("Error al cargar los datos de la qualy:", err);
+          currentQualy = null;
+          isUpdateMode = false;
+          submitButton.textContent = "Guardar Qualy";
+          populateDriverSelects();
+        });
+    }
+
+    function populateDriverSelects() {
+      driversContainer.innerHTML = "";
+      for (let i = 1; i <= 20; i++) {
+        const prefill = currentQualy ? currentQualy[`position${i}`] : "";
+        const selectDiv = createDriverSelect(i, prefill);
+        driversContainer.appendChild(selectDiv);
+      }
+
+      toggleSubmitButton();
+    }
+
+    raceTypeSelect.addEventListener("change", () => {
+      filterRaces();
+    });
+
+    raceSelect.addEventListener("change", () => {
+      const raceId = raceSelect.value;
+      if (raceId) {
+        loadQualy(raceId);
+      } else {
+        driversContainer.innerHTML = "";
+        submitButton.textContent = "Guardar Qualy";
+        toggleSubmitButton();
+      }
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const positions = [];
+      for (let i = 1; i <= 20; i++) {
+        const select = document.getElementById(
+          "driver-" + i
+        ) as HTMLSelectElement;
+        if (select) {
+          positions.push(select.value);
+        }
+      }
+      const raceId = raceSelect.value;
+      if (!raceId) {
+        window.toast({
+          title: "Error",
+          message: "Debe seleccionar una carrera",
+          type: "error",
+          dismissible: true,
+          icon: true,
+        });
+        return;
+      }
+      const payload = {
+        race_weekend_id: raceId,
+        positions,
+      };
+
+      const token = sessionStorage.getItem("token") ?? "";
+      const method = isUpdateMode ? "PATCH" : "POST";
+      const url = "/api/qualifying/" + (isUpdateMode ? currentQualy.id : "");
+
+      fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            window.toast({
+              title: "Error",
+              message: data.error,
+              type: "error",
+              dismissible: true,
+              icon: true,
+            });
+          } else {
+            window.toast({
+              title: "Éxito",
+              message: isUpdateMode
+                ? "Qualy actualizada correctamente"
+                : "Qualy guardada correctamente",
+              type: "success",
+              dismissible: true,
+              icon: true,
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          }
+        })
+        .catch((err) => {
+          console.error("Error al registrar los datos de la qualy:", err);
+          window.toast({
+            title: "Error",
+            message: "Server error",
+            type: "error",
+            dismissible: true,
+            icon: true,
+          });
+        });
+    });
+
+    loadRaces();
+    loadPilots();
+    toggleSubmitButton();
+  });
+</script>
