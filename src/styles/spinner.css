@@ -1,14 +1,15 @@
 .loader {
-    width: 48px;
-    height: 48px;
-    border: 2px solid #fafafa;
+    width: 3rem;
+    height: 3rem;
+    border: 0.125rem solid #fafafa;
     border-radius: 50%;
     display: inline-block;
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
+    transform: translate(-50%, -50%) rotate(0deg);
 }
 
 .loader::after,
@@ -19,8 +20,8 @@
     left: 0;
     top: 0;
     background: #294643;
-    width: 6px;
-    height: 6px;
+    width: 0.375rem;
+    height: 0.375rem;
     border-radius: 50%;
 }
 
@@ -33,10 +34,24 @@
 
 @keyframes rotation {
     0% {
-        transform: rotate(0deg);
+        transform: translate(-50%, -50%) rotate(0deg);
     }
 
     100% {
-        transform: rotate(360deg);
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@media (min-width: 768px) {
+    .loader {
+        width: 4rem;
+        height: 4rem;
+        border-width: 0.1875rem;
+    }
+
+    .loader::after,
+    .loader::before {
+        width: 0.5rem;
+        height: 0.5rem;
     }
 }
