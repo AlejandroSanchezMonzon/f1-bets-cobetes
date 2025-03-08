@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { db } from "@/lib/turso";
 import { res } from "@/utils/api";
+import jwt from "jsonwebtoken";
 
 function validateUser(authHeader: string | null): number | null {
   if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) return null;
@@ -10,7 +11,7 @@ function validateUser(authHeader: string | null): number | null {
   if (!secretKey) throw new Error("Token secreto de autenticación no encontrado");
 
   try {
-    const decoded = require("jsonwebtoken").verify(token, secretKey) as { userId: number };
+    const decoded = jwt.verify(token, secretKey) as { userId: number };
 
     return decoded.userId;
   } catch (error) {
@@ -27,14 +28,9 @@ export const GET: APIRoute = async ({ request, url }) => {
     return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
   }
 
-  const raceWeekendId = url.searchParams.get("race_weekend_id");
   let sql = "SELECT * FROM Predictions WHERE user_id = ?";
   const args: any[] = [userId];
 
-  if (raceWeekendId) {
-    sql += " AND race_weekend_id = ?";
-    args.push(raceWeekendId);
-  }
   try {
     const result = await db.execute({ sql, args });
 
@@ -67,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
     await db.execute({
       sql: `INSERT INTO Predictions
             (user_id, race_weekend_id, position_predicted_first, position_predicted_second, position_predicted_third, submission_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
       args: [
         userId,
         race_weekend_id,

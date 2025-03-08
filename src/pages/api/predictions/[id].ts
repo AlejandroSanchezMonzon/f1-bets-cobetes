@@ -31,8 +31,8 @@ export const GET: APIRoute = async ({ params, request }) => {
 
   try {
     const result = await db.execute({
-      sql: "SELECT * FROM Predictions WHERE race_weekend_id = ?",
-      args: [id as string],
+      sql: "SELECT * FROM Predictions WHERE id = ? AND user_id = ?",
+      args: [id as string, userId],
     });
     if (result.rows.length === 0) {
       return res(JSON.stringify({ error: "Predicciones no encontradas" }), { status: 404 });
