@@ -7,7 +7,7 @@ export async function checkAdmin(authHeader: string | null): Promise<number | nu
     }
     const token = authHeader.slice(7).trim();
     const secretKey = import.meta.env.JWT_SECRET;
-    if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
+    if (!secretKey) throw new Error("Token secreto de autenticación no encontrado");
 
     try {
         const decoded = jwt.verify(token, secretKey) as { userId: number; is_admin: boolean };
@@ -30,7 +30,7 @@ export function validateUser(authHeader: string | null): number | null {
     }
     const token = authHeader.slice(7).trim();
     const secretKey = import.meta.env.JWT_SECRET;
-    if (!secretKey) throw new Error("Missing JWT_SECRET in environment variables");
+    if (!secretKey) throw new Error("Token secreto de autenticación no encontrado");
     try {
         const decoded = jwt.verify(token, secretKey) as { userId: number };
         return decoded.userId;
