@@ -43,12 +43,13 @@ body {
 
 main {
     min-height: 75vh;
+    min-width: 75vw;
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* padding: 4rem 0rem; */
+    padding: 4rem 0rem;
 }
 
 @import "tailwindcss";
