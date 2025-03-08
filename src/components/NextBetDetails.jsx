@@ -413,7 +413,7 @@ export default function NextBetDetails() {
             </div>
             <button
               type="submit"
-              className={`w-100 text-primary bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center ${
+              className={`w-full text-primary bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center ${
                 isFormValid ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
               }`}
               disabled={!isFormValid}
