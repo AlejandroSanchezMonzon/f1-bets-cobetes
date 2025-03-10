@@ -22,10 +22,6 @@ function validateUser(authHeader: string | null): number | null {
 }
 
 function calculatePredictionPoints(pred: any, result: any, raceType: string) {
-  console.log("Calculating points for prediction:", pred);
-  console.log("With result:", result);
-  console.log("And raceType:", raceType);
-
   if (raceType === "sprint") {
     let points = 0;
     let exactCount = 0;
@@ -149,12 +145,8 @@ export const PATCH: APIRoute = async ({ params, request }) => {
       return res(JSON.stringify({ error: "Predicciones no encontradas" }), { status: 404 });
     }
 
-    console.log("Podium:", podium);
-    console.log("Predictions:", fetchResult.rows);
-
     for (const prediction of fetchResult.rows) {
       const totalPoints = calculatePredictionPoints(prediction, podium, raceType);
-      console.log("Puntos de la prediccion:", totalPoints);
       await db.execute({
         sql: "UPDATE Predictions SET total_points = ? WHERE id = ?",
         args: [totalPoints, prediction.id],
@@ -166,7 +158,6 @@ export const PATCH: APIRoute = async ({ params, request }) => {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };
