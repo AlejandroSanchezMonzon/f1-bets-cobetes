@@ -9,4 +9,10 @@ import Layout from "@/layouts/Layout.astro";
   </main>
 </Layout>
 
-<style></style>
+<script>
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/login";
+  }
+</script>
