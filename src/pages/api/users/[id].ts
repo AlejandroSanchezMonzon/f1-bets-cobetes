@@ -4,6 +4,21 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { res } from "@/utils/api";
 
+export const GET: APIRoute = async ({ params }) => {
+  const { id } = params;
+  const userQuery = await db.execute({
+    sql: "SELECT username FROM Users WHERE id = ?",
+    args: [id as string],
+  });
+
+  if (userQuery.rows.length === 0) {
+    return res(JSON.stringify({ error: "Usuario no encontrado" }), { status: 404 });
+  }
+
+  const { username } = userQuery.rows[0];
+  return res(JSON.stringify({ username }), { status: 200 });
+};
+
 export const PATCH: APIRoute = async ({ params, request }) => {
   const { id } = params;
   const authHeader = request.headers.get("Authorization");
