@@ -245,9 +245,9 @@ export default function NextBetDetails() {
       : "/api/predictions";
     const body = {
       race_weekend_id: raceData.id,
-      position_predicted_first: formData.position_predicted_first,
-      position_predicted_second: formData.position_predicted_second,
-      position_predicted_third: formData.position_predicted_third,
+      position_predicted_first: Number(formData.position_predicted_first),
+      position_predicted_second: Number(formData.position_predicted_second),
+      position_predicted_third: Number(formData.position_predicted_third),
     };
 
     try {
