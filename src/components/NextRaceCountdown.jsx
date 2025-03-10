@@ -29,7 +29,7 @@ export default function NextRaceCountdown() {
     if (!race?.raceDate) return;
 
     const raceStart = new Date(race.raceDate);
-    const betCloseTime = new Date(raceStart.getTime() - 6 * 60 * 60 * 1000);
+    const betCloseTime = new Date(raceStart.getTime() - 0.5 * 60 * 60 * 1000);
 
     const updateCountdown = () => {
       const now = new Date();
