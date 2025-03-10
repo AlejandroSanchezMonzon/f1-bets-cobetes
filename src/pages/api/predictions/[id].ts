@@ -76,13 +76,27 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     const {
       position_predicted_first,
       position_predicted_second,
-      position_predicted_third
+      position_predicted_third,
+      total_points
     } = await request.json();
     let fields: string[] = [];
     let args: any[] = [];
-    if (position_predicted_first !== undefined) { fields.push("position_predicted_first = ?"); args.push(position_predicted_first); }
-    if (position_predicted_second !== undefined) { fields.push("position_predicted_second = ?"); args.push(position_predicted_second); }
-    if (position_predicted_third !== undefined) { fields.push("position_predicted_third = ?"); args.push(position_predicted_third); }
+    if (position_predicted_first !== undefined) {
+      fields.push("position_predicted_first = ?");
+      args.push(position_predicted_first);
+    }
+    if (position_predicted_second !== undefined) {
+      fields.push("position_predicted_second = ?");
+      args.push(position_predicted_second);
+    }
+    if (position_predicted_third !== undefined) {
+      fields.push("position_predicted_third = ?");
+      args.push(position_predicted_third);
+    }
+    if (total_points !== undefined) {
+      fields.push("total_points = ?");
+      args.push(total_points);
+    }
     if (fields.length === 0) {
       return res(JSON.stringify({ error: "No hay campos para actualizar" }), { status: 400 });
     }
