@@ -71,14 +71,14 @@
     let isUpdateMode = false;
 
     let formData: {
-      [key: string]: string;
-      position_result_first: string;
-      position_result_second: string;
-      position_result_third: string;
+      [key: string]: number | null;
+      position_result_first: number | null;
+      position_result_second: number | null;
+      position_result_third: number | null;
     } = {
-      position_result_first: "",
-      position_result_second: "",
-      position_result_third: "",
+      position_result_first: null,
+      position_result_second: null,
+      position_result_third: null,
     };
 
     function validateForm() {
@@ -89,9 +89,9 @@
         position_result_third,
       } = formData;
       if (
-        !position_result_first ||
-        !position_result_second ||
-        !position_result_third
+        position_result_first === null ||
+        position_result_second === null ||
+        position_result_third === null
       )
         return false;
       if (
@@ -115,7 +115,7 @@
       }
     }
 
-    function createResultSelect(position: number, prefillValue = "") {
+    function createResultSelect(position: number, prefillValue: any = null) {
       const div = document.createElement("div");
 
       const label = document.createElement("label");
@@ -139,18 +139,21 @@
 
       pilots.forEach((pilot: any) => {
         const option = document.createElement("option");
-        option.value = pilot.id;
+        option.value = pilot.id.toString();
         option.text = pilot.name;
         select.appendChild(option);
       });
 
-      if (prefillValue) {
-        select.value = prefillValue;
+      if (prefillValue !== null) {
+        // Convert to string for the select, but store as int in formData
+        select.value = prefillValue.toString();
         formData[select.name] = prefillValue;
       }
 
       select.addEventListener("change", () => {
-        formData[select.name] = select.value;
+        formData[select.name] = select.value
+          ? parseInt(select.value, 10)
+          : null;
         toggleSubmitButton();
       });
 
@@ -185,7 +188,7 @@
 
       filteredRaces.forEach((race: any) => {
         const option = document.createElement("option");
-        option.value = race.id;
+        option.value = race.id.toString();
         option.text = `Ronda ${race.round_number}: ${race.race_name} (${race.race_type})`;
         raceSelect.appendChild(option);
       });
@@ -237,10 +240,8 @@
             ? currentResult.position_first
             : i === 2
               ? currentResult.position_second
-              : i === 3
-                ? currentResult.position_third
-                : ""
-          : "";
+              : currentResult.position_third
+          : null;
         const selectDiv = createResultSelect(i, prefill);
         podiumContainer.appendChild(selectDiv);
       }
@@ -270,7 +271,7 @@
           "result-" + i
         ) as HTMLSelectElement;
         if (select) {
-          positions.push(select.value);
+          positions.push(select.value ? parseInt(select.value, 10) : null);
         }
       }
       const raceId = raceSelect.value;
@@ -285,7 +286,7 @@
         return;
       }
       const payload = {
-        race_weekend_id: raceId,
+        race_weekend_id: parseInt(raceId, 10),
         position_first: positions[0],
         position_second: positions[1],
         position_third: positions[2],
@@ -323,9 +324,49 @@
               dismissible: true,
               icon: true,
             });
-            setTimeout(() => {
-              window.location.reload();
-            }, 1500);
+
+            fetch(`/api/predictions/${raceId}`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(payload),
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.error) {
+                  window.toast({
+                    title: "Error",
+                    message: data.error,
+                    type: "error",
+                    dismissible: true,
+                    icon: true,
+                  });
+                } else {
+                  window.toast({
+                    title: "Éxito",
+                    message: "Puntos calculados correctamente",
+                    type: "success",
+                    dismissible: true,
+                    icon: true,
+                  });
+
+                  setInterval(() => {
+                    window.location.reload();
+                  }, 1500);
+                }
+              })
+              .catch((err) => {
+                console.error("Error al calcular los puntos:", err);
+                window.toast({
+                  title: "Error",
+                  message: "Server error",
+                  type: "error",
+                  dismissible: true,
+                  icon: true,
+                });
+              });
           }
         })
         .catch((err) => {
