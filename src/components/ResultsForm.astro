@@ -325,7 +325,7 @@
               icon: true,
             });
 
-            fetch(`/api/predictions/${raceId}`, {
+            fetch(`/api/predictions/calculate/${raceId}`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
@@ -352,9 +352,9 @@
                     icon: true,
                   });
 
-                  setInterval(() => {
-                    window.location.reload();
-                  }, 1500);
+                  // setInterval(() => {
+                  //   window.location.reload();
+                  // }, 1500);
                 }
               })
               .catch((err) => {
