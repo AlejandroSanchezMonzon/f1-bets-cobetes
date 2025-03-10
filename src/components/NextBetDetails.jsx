@@ -262,7 +262,7 @@ export default function NextBetDetails() {
       const data = await resUpdate.json();
       if (resUpdate.ok) {
         window.toast({
-          title: "Success",
+          title: "Éxito",
           message: "Tu predicción ha sido guardada correctamente",
           type: "success",
           dismissible: true,
