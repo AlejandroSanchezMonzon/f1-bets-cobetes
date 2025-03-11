@@ -3,13 +3,13 @@
     <div>
       <label
         for="race-type-qualy"
-        class="block mb-2 text-sm font-regular text-primary"
+        class="block mb-2 text-sm font-regular"
       >
         Seleccione el tipo de carrera
       </label>
       <select
         id="race-type-qualy"
-        class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+        class="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
       >
         <option value="">Seleccione el tipo de carrera</option>
         <option value="gp">Gran Premio</option>
@@ -20,13 +20,13 @@
     <div>
       <label
         for="race-qualy"
-        class="block mb-2 text-sm font-regular text-primary"
+        class="block mb-2 text-sm font-regular"
       >
         Seleccione la carrera *
       </label>
       <select
         id="race-qualy"
-        class="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+        class="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
         required
       >
         <option value="">Seleccione la carrera</option>
@@ -80,13 +80,13 @@
       const label = document.createElement("label");
       label.innerText = "Posición " + position;
       label.setAttribute("for", "driver-" + position);
-      label.className = "block mb-2 text-sm font-regular text-primary";
+      label.className = "block mb-2 text-sm font-regular";
 
       const select = document.createElement("select");
       select.id = "driver-" + position;
       select.name = "position" + position;
       select.className =
-        "bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5";
+        "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5";
       select.required = true;
 
       const defaultOption = document.createElement("option");

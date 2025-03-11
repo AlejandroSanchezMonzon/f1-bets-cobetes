@@ -298,7 +298,7 @@ export default function NextBetDetails() {
   }
 
   return (
-    <div className="p-4 rounded-md shadow-md bg-secondary text-primary">
+    <div className="p-4 rounded-md shadow-md bg-secondary">
       <div className="flex flex-col">
         <div className="flex flex-col md:flex-row items-center justify-center gap-8">
           <div className="flex items-center">
@@ -371,7 +371,7 @@ export default function NextBetDetails() {
                   name="position_predicted_first"
                   value={formData.position_predicted_first}
                   onChange={handleChange}
-                  className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+                  className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
                   <option value="">Seleccione piloto</option>
                   {Object.entries(pilotMapping).map(([id, pilot]) => (
@@ -405,7 +405,7 @@ export default function NextBetDetails() {
                   name="position_predicted_second"
                   value={formData.position_predicted_second}
                   onChange={handleChange}
-                  className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+                  className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
                   <option value="">Seleccione piloto</option>
                   {Object.entries(pilotMapping).map(([id, pilot]) => (
@@ -439,7 +439,7 @@ export default function NextBetDetails() {
                   name="position_predicted_third"
                   value={formData.position_predicted_third}
                   onChange={handleChange}
-                  className="bg-secondary border border-gray-300 text-primary text-sm rounded-lg block w-full p-2.5"
+                  className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
                   <option value="">Seleccione piloto</option>
                   {Object.entries(pilotMapping).map(([id, pilot]) => (
@@ -466,7 +466,7 @@ export default function NextBetDetails() {
             </div>
             <button
               type="submit"
-              className={`w-full text-primary bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center ${
+              className={`w-full bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm sm:w-auto px-5 py-2.5 text-center ${
                 isFormValid ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
               }`}
               disabled={!isFormValid}
