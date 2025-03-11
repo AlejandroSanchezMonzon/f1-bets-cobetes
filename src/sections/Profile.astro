@@ -109,6 +109,26 @@
       return;
     }
 
+    function validateForm() {
+      const password = passwordInput.value.trim();
+      const confirmPassword = passwordRepeatInput.value.trim();
+
+      if (!password || !confirmPassword) return false;
+      return password === confirmPassword;
+    }
+
+    function toggleUpdateButton() {
+      if (validateForm()) {
+        updateButton.disabled = false;
+        updateButton.classList.remove("opacity-50", "cursor-not-allowed");
+        updateButton.classList.add("cursor-pointer");
+      } else {
+        updateButton.disabled = true;
+        updateButton.classList.add("opacity-50", "cursor-not-allowed");
+        updateButton.classList.remove("cursor-pointer");
+      }
+    }
+
     let currentUser: any = null;
 
     async function loadUserData() {
@@ -132,6 +152,14 @@
       }
     }
     await loadUserData();
+
+    passwordInput.addEventListener("change", async () => {
+      toggleUpdateButton();
+    });
+
+    passwordRepeatInput.addEventListener("change", async () => {
+      toggleUpdateButton();
+    });
 
     updateButton.addEventListener("click", async () => {
       const newPassword = passwordInput.value.trim();
@@ -216,5 +244,7 @@
       sessionStorage.removeItem("token");
       window.location.href = "/login";
     });
+
+    toggleUpdateButton();
   });
 </script>
