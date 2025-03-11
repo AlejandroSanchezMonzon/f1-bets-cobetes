@@ -314,13 +314,13 @@ export default function NextBetDetails() {
     <div className="p-4 rounded-md shadow-md bg-secondary">
       <div className="flex flex-col">
         <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-          <div className="flex items-center">
+          <div className="flex flex-col md:flex-row items-center">
             <img
-              src={`/circuits/${raceData.id}.png`}
+              src={`/circuits/flags/${raceData.round_number}.png`}
               alt={raceData.race_name}
-              className="w-40 h-auto mr-4"
+              className="w-40 h-auto md:mr-4 mb-4"
             />
-            <h2 className="text-xl font-bold w-75">{raceData.race_name}</h2>
+            <h2 className="text-xl text-center md:text-left font-bold w-75">{raceData.race_name}</h2>
           </div>
           <div className="text-center border-primary border-2 p-2 rounded bg-gradient-to-br from-secondary via-footer to-secondary">
             <p className="text-lg font-semibold">

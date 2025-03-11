@@ -39,7 +39,9 @@ export default function NextRaceCountdown() {
         setCountdown("Votación cerrada");
       } else {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const hours = Math.floor(
+          (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
@@ -56,7 +58,7 @@ export default function NextRaceCountdown() {
       <div className="flex-shrink-0">
         <img
           className="object-cover h-32 rounded-lg"
-          src={`/circuits/${race.id}.png`}
+          src={`/circuits/tracks/${race.id}.png`}
           alt={race.raceName}
         />
       </div>
