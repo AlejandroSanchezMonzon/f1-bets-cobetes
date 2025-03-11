@@ -3,7 +3,7 @@ import { db } from "@/lib/turso";
 import { res } from "@/utils/api";
 import { checkAdmin } from "@/utils/auth";
 
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ params }) => {
   const { race_weekend_id } = params;
 
   try {
