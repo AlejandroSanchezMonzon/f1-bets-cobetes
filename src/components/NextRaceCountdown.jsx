@@ -69,7 +69,7 @@ export default function NextRaceCountdown() {
             {race.raceType.toUpperCase()}
           </p>
         </div>
-        <p className="text-xl">{race.raceName}</p>
+        <p className="text-xl"><span className="font-wide mr-2 md:mr-4"># {race.roundNumber}</span> {race.raceName}</p>
         <p className="mt-2 text-3xl font-extrabold text-yellow-300">
           {countdown}
         </p>
