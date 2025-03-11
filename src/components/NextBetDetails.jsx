@@ -73,6 +73,7 @@ export default function NextBetDetails() {
   const [weatherData, setWeatherData] = useState(null);
   const [prediction, setPrediction] = useState(null);
   const [canPredict, setCanPredict] = useState(false);
+  const [hasResults, setHasResults] = useState(false);
   const [formData, setFormData] = useState({
     position_predicted_first: "",
     position_predicted_second: "",
@@ -105,7 +106,6 @@ export default function NextBetDetails() {
               nationality: pilot.nationality,
             };
           });
-
           setPilotMapping(mapping);
         }
       })
@@ -176,6 +176,19 @@ export default function NextBetDetails() {
         console.error("Error al obtener la geolocalización del circuito:", err)
       );
 
+    fetch(`/api/results/${raceData.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.result) {
+          setHasResults(true);
+        } else {
+          setHasResults(false);
+        }
+      })
+      .catch((err) =>
+        console.error("Error al comprobar los resultados de la carrera:", err)
+      );
+
     const token = sessionStorage.getItem("token");
     if (token) {
       fetch(`/api/predictions/${raceData.id}`, {
@@ -185,7 +198,6 @@ export default function NextBetDetails() {
         .then((data) => {
           if (data.prediction) {
             const userPrediction = data.prediction;
-
             setPrediction(userPrediction);
             setFormData({
               position_predicted_first: userPrediction.position_predicted_first,
@@ -207,8 +219,10 @@ export default function NextBetDetails() {
     const predictionCloseTime = new Date(
       raceStart.getTime() - 0.5 * 60 * 60 * 1000
     );
-    setCanPredict(new Date() < predictionCloseTime && qualyData !== null);
-  }, [raceData, qualyData]);
+    setCanPredict(
+      new Date() < predictionCloseTime && qualyData !== null && !hasResults
+    );
+  }, [raceData, qualyData, hasResults]);
 
   useEffect(() => {
     const {
@@ -268,7 +282,6 @@ export default function NextBetDetails() {
           dismissible: true,
           icon: true,
         });
-
         setInterval(() => {
           window.location.reload();
         }, 1500);
@@ -476,7 +489,9 @@ export default function NextBetDetails() {
           </form>
         ) : (
           <p className="text-sm text-gray-400">
-            {qualyData
+            {hasResults
+              ? "Resultados publicados. No se puede realizar la predicción."
+              : qualyData
               ? "Predicción cerrada (quedan menos de 12 h. para el inicio de la carrera)."
               : "Qualy no publicada aún. No se puede realizar la predicción."}
           </p>
