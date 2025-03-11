@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Loader from "@/components/Loader";
 
 function getBarColor(rank, totalEntries) {
   if (rank === 1) return "#D4AF37";
@@ -52,7 +53,11 @@ export default function RankingOverview() {
   }, [ranking, userMapping]);
 
   if (loading) {
-    return <div></div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   const maxPoints = ranking.reduce(

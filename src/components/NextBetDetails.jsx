@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Spinner from "@/components/Spinner";
+import Loader from "@/components/Loader";
 
 function weatherCodeToText(code) {
   const mapping = {
@@ -307,7 +307,7 @@ export default function NextBetDetails() {
   };
 
   if (!raceData) {
-    return <Spinner />;
+    return <Loader />;
   }
 
   return (

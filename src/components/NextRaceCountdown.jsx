@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Spinner from "@/components/Spinner";
+import Loader from "@/components/Loader";
 
 export default function NextRaceCountdown() {
   const [raceData, setRaceData] = useState(null);
@@ -71,9 +71,10 @@ export default function NextRaceCountdown() {
           {countdown}
         </p>
       </div>
-      <div></div>
     </article>
   ) : (
-    <div></div>
+    <div>
+      <Loader />
+    </div>
   );
 }
