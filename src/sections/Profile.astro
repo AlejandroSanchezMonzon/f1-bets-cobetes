@@ -153,11 +153,11 @@
     }
     await loadUserData();
 
-    passwordInput.addEventListener("change", async () => {
+    passwordInput.addEventListener("keyup", async () => {
       toggleUpdateButton();
     });
 
-    passwordRepeatInput.addEventListener("change", async () => {
+    passwordRepeatInput.addEventListener("keyup", async () => {
       toggleUpdateButton();
     });
 
