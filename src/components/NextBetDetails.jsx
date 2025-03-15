@@ -198,6 +198,7 @@ export default function NextBetDetails() {
         .then((data) => {
           if (data.prediction) {
             const userPrediction = data.prediction;
+
             setPrediction(userPrediction);
             setFormData({
               position_predicted_first: userPrediction.position_predicted_first,
@@ -254,8 +255,9 @@ export default function NextBetDetails() {
     const token = sessionStorage.getItem("token");
     if (!token) return;
     const method = prediction ? "PATCH" : "POST";
+
     const url = prediction
-      ? `/api/predictions/${prediction.id}`
+      ? `/api/predictions/${raceData.id}`
       : "/api/predictions";
     const body = {
       race_weekend_id: raceData.id,
@@ -320,7 +322,9 @@ export default function NextBetDetails() {
               alt={raceData.race_name}
               className="w-40 h-auto md:mr-4 mb-4"
             />
-            <h2 className="text-xl text-center md:text-left font-bold w-75">{raceData.race_name}</h2>
+            <h2 className="text-xl text-center md:text-left font-bold w-75">
+              {raceData.race_name}
+            </h2>
           </div>
           <div className="text-center border-primary border-2 p-2 rounded bg-gradient-to-br from-secondary via-footer to-secondary">
             <p className="text-lg font-semibold">
