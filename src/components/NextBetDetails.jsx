@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 function weatherCodeToText(code) {
   const mapping = {
@@ -80,6 +81,7 @@ export default function NextBetDetails() {
     position_predicted_third: "",
   });
   const [isFormValid, setIsFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetch("/api/race-weekends/next")
@@ -255,6 +257,7 @@ export default function NextBetDetails() {
     const token = sessionStorage.getItem("token");
     if (!token) return;
     const method = prediction ? "PATCH" : "POST";
+    setLoading(true);
 
     const url = prediction
       ? `/api/predictions/${raceData.id}`
@@ -276,6 +279,11 @@ export default function NextBetDetails() {
         body: JSON.stringify(body),
       });
       const data = await resUpdate.json();
+
+      if (data) {
+        setLoading(false);
+      }
+
       if (resUpdate.ok) {
         window.toast({
           title: "Éxito",
@@ -501,6 +509,8 @@ export default function NextBetDetails() {
           </p>
         )}
       </div>
+
+      <LoadingOverlay loading={loading} />
     </div>
   );
 }
