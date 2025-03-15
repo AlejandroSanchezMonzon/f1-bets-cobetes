@@ -1,10 +1,11 @@
+---
+import LoadingOverlay from "@/components/LoadingOverlay.tsx";
+---
+
 <form class="max-w-sm md:max-w-none" id="qualy-form">
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2 max-w-none mb-5">
     <div>
-      <label
-        for="race-type-qualy"
-        class="block mb-2 text-sm font-regular"
-      >
+      <label for="race-type-qualy" class="block mb-2 text-sm font-regular">
         Seleccione el tipo de carrera
       </label>
       <select
@@ -18,10 +19,7 @@
     </div>
 
     <div>
-      <label
-        for="race-qualy"
-        class="block mb-2 text-sm font-regular"
-      >
+      <label for="race-qualy" class="block mb-2 text-sm font-regular">
         Seleccione la carrera *
       </label>
       <select
@@ -53,6 +51,8 @@
     </button>
   </div>
 </form>
+
+<LoadingOverlay client:load />
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -237,6 +237,8 @@
     });
 
     form.addEventListener("submit", (e) => {
+      window.dispatchEvent(new CustomEvent("toggleLoading", { detail: true }));
+
       e.preventDefault();
       const positions = [];
       for (let i = 1; i <= 20; i++) {
@@ -277,6 +279,12 @@
       })
         .then((res) => res.json())
         .then((data) => {
+          if (data) {
+            window.dispatchEvent(
+              new CustomEvent("toggleLoading", { detail: false })
+            );
+          }
+
           if (data.error) {
             window.toast({
               title: "Error",
