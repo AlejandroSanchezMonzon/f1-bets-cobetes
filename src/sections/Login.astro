@@ -1,4 +1,5 @@
 ---
+import LoadingOverlay from "@/components/LoadingOverlay.tsx";
 ---
 
 <form class="max-w-sm mx-auto md:min-w-96">
@@ -29,9 +30,7 @@
   </div>
   <div class="mb-4">
     <input type="checkbox" id="toggle-password" class="mr-1" />
-    <label for="togglePassword" class="text-sm"
-      >Mostrar contraseña</label
-    >
+    <label for="togglePassword" class="text-sm">Mostrar contraseña</label>
   </div>
 
   <div class="flex flex-col gap-4">
@@ -43,6 +42,8 @@
     >
   </div>
 </form>
+
+<LoadingOverlay client:load />
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -80,6 +81,8 @@
     });
 
     loginButton.addEventListener("click", async () => {
+      window.dispatchEvent(new CustomEvent("toggleLoading", { detail: true }));
+
       const email = emailInput.value;
       const password = passwordInput.value;
 
@@ -89,7 +92,7 @@
           message: "Por favor, ingresa correo y contraseña",
           type: "error",
           icon: true,
-          dismissible: true
+          dismissible: true,
         });
         return;
       }
@@ -102,13 +105,19 @@
         });
         const data = await response.json();
 
+        if (data) {
+          window.dispatchEvent(
+            new CustomEvent("toggleLoading", { detail: false })
+          );
+        }
+
         if (response.ok) {
           window.toast({
             title: "Éxito",
             message: "Inicio de sesión exitoso",
             type: "success",
             icon: true,
-            dismissible: true
+            dismissible: true,
           });
 
           sessionStorage.setItem("token", data.token);
@@ -119,7 +128,7 @@
             message: "Credenciales incorrectas",
             type: "error",
             icon: true,
-            dismissible: true
+            dismissible: true,
           });
         }
       } catch (error) {
@@ -129,7 +138,7 @@
           message: "Error en la conexión con el servidor",
           type: "error",
           icon: true,
-          dismissible: true
+          dismissible: true,
         });
       }
     });
