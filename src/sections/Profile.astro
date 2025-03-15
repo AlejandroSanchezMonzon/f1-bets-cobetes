@@ -1,5 +1,5 @@
 ---
-
+import LoadingOverlay from "@/components/LoadingOverlay.tsx";
 ---
 
 <form class="max-w-md mx-auto md:min-w-96">
@@ -71,6 +71,8 @@
     </div>
   </div>
 </form>
+
+<LoadingOverlay client:load />
 
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
@@ -162,6 +164,8 @@
     });
 
     updateButton.addEventListener("click", async () => {
+      window.dispatchEvent(new CustomEvent("toggleLoading", { detail: true }));
+
       const newPassword = passwordInput.value.trim();
       const confirmPassword = passwordRepeatInput.value.trim();
 
@@ -206,6 +210,13 @@
           },
           body: JSON.stringify({ password: newPassword }),
         });
+
+        if (resUpdate) {
+          window.dispatchEvent(
+            new CustomEvent("toggleLoading", { detail: false })
+          );
+        }
+
         if (resUpdate.ok) {
           window.toast({
             title: "Éxito",
