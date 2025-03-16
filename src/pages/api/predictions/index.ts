@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
     await db.execute({
       sql: `INSERT INTO Predictions
             (user_id, race_weekend_id, position_predicted_first, position_predicted_second, position_predicted_third, submission_time)
-            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+            VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%S', 'now'))`,
       args: [
         userId,
         race_weekend_id,

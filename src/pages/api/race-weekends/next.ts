@@ -14,7 +14,7 @@ export const GET: APIRoute = async () => {
                 created_at
               FROM Race_Weekends
               WHERE deleted_at IS NULL
-                AND race_date > CURRENT_TIMESTAMP
+                AND race_date > strftime('%Y-%m-%dT%H:%M:%S', 'now')
               ORDER BY race_date ASC
               LIMIT 1`,
             args: [],

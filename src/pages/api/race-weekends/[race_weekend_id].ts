@@ -68,7 +68,7 @@ export const DELETE: APIRoute = async ({ params, request }) => {
 
   try {
     await db.execute({
-      sql: "UPDATE Results SET deleted_at = CURRENT_TIMESTAMP WHERE race_weekend_id = ?",
+      sql: "UPDATE Results SET deleted_at = strftime('%Y-%m-%dT%H:%M:%S', 'now') WHERE race_weekend_id = ?",
       args: [race_weekend_id as string],
     });
 
