@@ -222,6 +222,7 @@ export default function NextBetDetails() {
     const predictionCloseTime = new Date(
       raceStart.getTime() - 0.5 * 60 * 60 * 1000
     );
+
     setCanPredict(
       new Date() < predictionCloseTime && qualyData !== null && !hasResults
     );
