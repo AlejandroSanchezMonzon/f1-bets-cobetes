@@ -58,7 +58,7 @@ export default function NextRaceCountdown() {
       <div className="flex-shrink-0">
         <img
           className="object-cover h-32 rounded-lg"
-          src={`/circuits/tracks/${race.id}.png`}
+          src={`/circuits/tracks/${race.roundNumber}.png`}
           alt={race.raceName}
         />
       </div>
