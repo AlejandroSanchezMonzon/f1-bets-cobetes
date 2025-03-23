@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
 
 function getBarColor(rank, totalEntries) {
-  if (rank === 1) return "#D4AF37";
-  if (rank === 2) return "#BEC2CB";
-  if (rank === 3) return "#C36000";
+  if (rank === 1) return "#FFD700";
+  if (rank === 2) return "#C0C0C0";
+  if (rank === 3) return "#CD7F32";
 
   const baseColor = [41, 70, 67];
   const darkColor = [26, 43, 43];
