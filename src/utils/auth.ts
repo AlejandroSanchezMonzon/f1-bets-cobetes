@@ -12,7 +12,7 @@ export async function checkAdmin(authHeader: string | null): Promise<number | nu
     try {
         const decoded = jwt.verify(token, secretKey) as { userId: number; is_admin: boolean };
         const result = await db.execute({
-            sql: "SELECT is_admin FROM Users WHERE id = ?",
+            sql: "SELECT is_admin FROM Users WHERE id = ? AND deleted_at IS NULL",
             args: [decoded.userId],
         });
         if (result.rows.length === 0) return null;

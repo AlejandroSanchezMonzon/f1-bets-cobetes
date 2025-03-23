@@ -96,7 +96,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     };
 
     const raceResult = await db.execute({
-      sql: "SELECT race_type FROM Race_Weekends WHERE id = ?",
+      sql: "SELECT race_type FROM Race_Weekends WHERE id = ? AND deleted_at IS NULL",
       args: [id as string],
     });
     if (raceResult.rows.length === 0) {
@@ -108,7 +108,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     const raceType = raceResult.rows[0].race_type as string;
 
     const fetchResult = await db.execute({
-      sql: "SELECT * FROM Predictions WHERE race_weekend_id = ?",
+      sql: "SELECT * FROM Predictions WHERE race_weekend_id = ? AND deleted_at IS NULL",
       args: [id as string],
     });
     if (fetchResult.rows.length === 0) {
@@ -122,7 +122,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
       const totalPoints = calculatePredictionPoints(prediction, podium, raceType);
       await db.execute({
-        sql: "UPDATE Predictions SET total_points = ? WHERE id = ?",
+        sql: "UPDATE Predictions SET total_points = ? WHERE id = ? AND deleted_at IS NULL",
         args: [totalPoints, prediction.id],
       });
     }

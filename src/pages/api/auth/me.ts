@@ -21,7 +21,7 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const result = await db.execute({
-    sql: "SELECT id, username, email FROM Users WHERE id = ?",
+    sql: "SELECT id, username, email FROM Users WHERE id = ? AND deleted_at IS NULL",
     args: [decoded.userId],
   });
   if (result.rows.length === 0) {

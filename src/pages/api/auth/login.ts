@@ -12,7 +12,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const result = await db.execute({
-      sql: "SELECT * FROM Users WHERE email = ?",
+      sql: "SELECT * FROM Users WHERE email = ? AND deleted_at IS NULL",
       args: [email],
     });
     const user = result.rows.length > 0 ? result.rows[0] : null;
