@@ -329,7 +329,7 @@ export default function NextBetDetails() {
             <img
               src={`/circuits/flags/${raceData.round_number}.png`}
               alt={raceData.race_name}
-              className="w-40 h-auto md:mr-4 mb-4"
+              className="w-40 h-auto md:mr-4 mb-4 object-contain border border-gray-300 rounded"
             />
             <h2 className="text-xl text-center md:text-left font-bold w-75">
               {raceData.race_name}
@@ -379,7 +379,9 @@ export default function NextBetDetails() {
               })}
             </div>
           ) : (
-            <p className="mt-6 text-sm text-gray-400">Qualy no publicada aún.</p>
+            <p className="mt-6 text-sm text-gray-400">
+              Qualy no publicada aún.
+            </p>
           )}
         </div>
       </div>
