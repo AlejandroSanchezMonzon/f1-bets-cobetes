@@ -60,11 +60,6 @@ export default function RankingOverview() {
     );
   }
 
-  const maxPoints = ranking.reduce(
-    (max, item) => Math.max(max, Number(item.season_points) || 0),
-    0
-  );
-
   return (
     <div className="p-4 bg-secondary rounded-md shadow-md">
       <h2 className="text-xl font-bold mb-4">
@@ -76,11 +71,18 @@ export default function RankingOverview() {
           const username = userMapping[item.user_id] || "";
           const seasonPoints = Number(item.season_points) || 0;
           const lastPoints = Number(item.last_points) || 0;
-          const widthPercent =
+
+          const maxPoints = ranking.reduce(
+            (max, item) => Math.max(max, Number(item.season_points) || 0),
+            0
+          );
+          const totalPercent =
             maxPoints > 0 ? (seasonPoints / maxPoints) * 100 : 0;
+          const lastPercent =
+            maxPoints > 0 ? (lastPoints / maxPoints) * 100 : 0;
+          const oldPercent = totalPercent - lastPercent;
           const barColor = getBarColor(rank, ranking.length);
-          const lastWidthPercent =
-            seasonPoints > 0 ? (lastPoints / seasonPoints) * widthPercent : 0;
+
           return (
             <div key={item.user_id} className="flex flex-col">
               <div className="flex items-center justify-between">
@@ -89,31 +91,38 @@ export default function RankingOverview() {
                 </span>
                 <span className="text-sm">{seasonPoints} pts</span>
               </div>
+
               <div className="flex relative h-4 border-b-1 border-b-gray-200 rounded">
                 <div
-                  className={
-                    `h-4 rounded-l` +
-                    (lastWidthPercent <= 0 ? " rounded-l" : "")
-                  }
                   style={{
-                    width: `${widthPercent}%`,
+                    width: `${oldPercent}%`,
                     backgroundColor: barColor,
                   }}
-                ></div>
-                {lastWidthPercent > 0 && (
-                  <div
-                    className="h-4 rounded-r"
-                    style={{
-                      width: `${lastWidthPercent}%`,
-                      backgroundColor: "#FAFAFA",
-                    }}
-                  ></div>
-                )}
+                />
+                <div
+                  style={{
+                    width: `${lastPercent}%`,
+                  }}
+                  className="lastPattern"
+                />
               </div>
             </div>
           );
         })}
       </div>
+
+      <style>{`
+        .lastPattern {
+          background-image: repeating-linear-gradient(
+            45deg,
+            rgba(74, 144, 226, 0.5),
+            rgba(74, 144, 226, 0.5) 5px,
+            rgba(74, 144, 226, 0.2) 5px,
+            rgba(74, 144, 226, 0.2) 10px
+          );
+        }
+      `}</style>
+
       <p className="text-sm mt-4">
         La barra muestra los puntos acumulados globalmente; la sección en blanco
         indica los puntos obtenidos en la última predicción.
