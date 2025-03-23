@@ -137,7 +137,7 @@ export default function BetsOverview() {
               <div className="flex-1">
                 <h2 className="text-xl font-bold mb-1">{race.race_name}</h2>
                 <p className="text-sm text-yellow-300">
-                  Ronda {race.round_number}· Fecha:{" "}
+                  Ronda {race.round_number}· {" "}
                   {new Date(race.race_date).toLocaleDateString("es-ES", {
                     year: "numeric",
                     month: "long",
