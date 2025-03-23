@@ -324,7 +324,7 @@ export default function NextBetDetails() {
   return (
     <div className="p-4 rounded-md shadow-md bg-secondary">
       <div className="flex flex-col">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+        <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-8">
           <div className="flex flex-col md:flex-row items-center">
             <img
               src={`/circuits/flags/${raceData.round_number}.png`}
@@ -379,7 +379,7 @@ export default function NextBetDetails() {
               })}
             </div>
           ) : (
-            <p className="mt-6 text-sm text-gray-400">Qualy no publicada aún</p>
+            <p className="mt-6 text-sm text-gray-400">Qualy no publicada aún.</p>
           )}
         </div>
       </div>
