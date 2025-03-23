@@ -124,7 +124,7 @@ export default function RankingOverview() {
       `}</style>
 
       <p className="text-sm mt-4">
-        La barra muestra los puntos acumulados globalmente; la sección en blanco
+        La barra muestra los puntos acumulados globalmente; la sección a rayas
         indica los puntos obtenidos en la última predicción.
       </p>
     </div>
