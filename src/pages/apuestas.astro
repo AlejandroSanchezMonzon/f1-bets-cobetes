@@ -1,0 +1,18 @@
+---
+import Bets from "@/sections/Bets.astro";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Histórico de apuestas de la temporada | F1 Bets Cobetes">
+  <main>
+    <Bets />
+  </main>
+</Layout>
+
+<script>
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = "/login";
+  }
+</script>
