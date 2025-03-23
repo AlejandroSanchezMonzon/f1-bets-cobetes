@@ -31,7 +31,7 @@ export const GET: APIRoute = async ({ params, request }) => {
 
   try {
     const result = await db.execute({
-      sql: "SELECT * FROM Predictions WHERE race_weekend_id = ? AND user_id = ?",
+      sql: "SELECT * FROM Predictions WHERE race_weekend_id = ? AND user_id = ? AND deleted_at IS NULL",
       args: [id as string, userId],
     });
     if (result.rows.length === 0) {
@@ -78,7 +78,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     }
 
     await db.execute({
-      sql: "UPDATE Predictions SET position_predicted_first = ?, position_predicted_second = ?, position_predicted_third = ? WHERE race_weekend_id = ? AND user_id = ?",
+      sql: "UPDATE Predictions SET position_predicted_first = ?, position_predicted_second = ?, position_predicted_third = ? WHERE race_weekend_id = ? AND user_id = ? AND deleted_at IS NULL",
       args: [
         position_predicted_first,
         position_predicted_second,

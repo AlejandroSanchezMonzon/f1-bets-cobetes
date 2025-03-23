@@ -21,14 +21,14 @@ function validateUser(authHeader: string | null): number | null {
   }
 }
 
-export const GET: APIRoute = async ({ request, url }) => {
+export const GET: APIRoute = async ({ request }) => {
   const authHeader = request.headers.get("Authorization");
   const userId = validateUser(authHeader);
   if (!userId) {
     return res(JSON.stringify({ error: "Operación no autorizada" }), { status: 401 });
   }
 
-  let sql = "SELECT * FROM Predictions WHERE user_id = ?";
+  let sql = "SELECT * FROM Predictions WHERE user_id = ? AND deleted_at IS NULL";
   const args: any[] = [userId];
 
   try {
