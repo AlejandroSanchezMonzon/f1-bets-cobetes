@@ -220,7 +220,7 @@ export default function BetsOverview() {
                       {predictions.map((pred) => (
                         <tr key={pred.id} className="border-b border-gray-700">
                           <td className="py-2 px-2">
-                            {userMapping[pred.user_id]?.username ||
+                            {userMapping[pred.user_id] ||
                               `User ${pred.user_id}`}
                           </td>
                           <td className="py-2 px-2">
