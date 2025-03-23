@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ request }) => {
 
   const requesterId = decoded.userId;
   const adminCheck = await db.execute({
-    sql: "SELECT is_admin FROM Users WHERE id = ?",
+    sql: "SELECT is_admin FROM Users WHERE id = ? AND deleted_at IS NULL",
     args: [requesterId],
   });
 
@@ -39,7 +39,7 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   const result = await db.execute({
-    sql: "SELECT id, username, email, is_admin FROM Users",
+    sql: "SELECT id, username, email, is_admin FROM Users WHERE deleted_at IS NULL",
     args: [],
   });
 

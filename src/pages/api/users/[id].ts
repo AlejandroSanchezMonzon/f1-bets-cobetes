@@ -7,7 +7,7 @@ import { res } from "@/utils/api";
 export const GET: APIRoute = async ({ params }) => {
   const { id } = params;
   const userQuery = await db.execute({
-    sql: "SELECT username FROM Users WHERE id = ?",
+    sql: "SELECT username FROM Users WHERE id = ? AND deleted_at IS NULL",
     args: [id as string],
   });
 
@@ -39,7 +39,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
 
   const requesterId = decoded.userId;
   const adminCheck = await db.execute({
-    sql: "SELECT is_admin FROM Users WHERE id = ?",
+    sql: "SELECT is_admin FROM Users WHERE id = ? AND deleted_at IS NULL",
     args: [requesterId],
   });
   if (adminCheck.rows.length === 0) {
@@ -80,7 +80,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
   }
 
   args.push(id);
-  const updateQuery = `UPDATE Users SET ${fields.join(", ")} WHERE id = ?`;
+  const updateQuery = `UPDATE Users SET ${fields.join(", ")} WHERE id = ? AND deleted_at IS NULL`;
 
   await db.execute({ sql: updateQuery, args });
 
