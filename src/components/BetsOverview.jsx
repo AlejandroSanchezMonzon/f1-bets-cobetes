@@ -114,7 +114,7 @@ export default function BetsOverview() {
   }
 
   return (
-    <div className="mx-auto p-4">
+    <div className="mx-auto">
       <h1 className="text-2xl md:text-3xl font-wide mb-8 text-primary">
         Historial de Predicciones y Resultados
       </h1>
