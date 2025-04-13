@@ -137,10 +137,9 @@ export default function NextBetDetails() {
 
     const parts = raceData.race_name.split("–");
     if (parts.length < 2) return;
-    const country = parts[0].trim();
     const subparts = parts[1].split(",");
     const city = subparts.length > 1 ? subparts[1].trim() : parts[1].trim();
-    const locationQuery = `${city}, ${country}`;
+    const locationQuery = `${city}`;
 
     fetch(
       `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
