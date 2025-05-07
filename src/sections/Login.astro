@@ -37,9 +37,11 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     <button
       id="button-login"
       type="button"
-      class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center cursor-pointer"
-      >Iniciar sesión</button
+      disabled
+      class="text-white bg-accent border border-gray-300 hover:bg-secondary font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center cursor-not-allowed opacity-50"
     >
+      Iniciar sesión
+    </button>
   </div>
 </form>
 
@@ -55,6 +57,24 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       (document.getElementById("button-login") as HTMLButtonElement) || null;
     const togglePasswordCheckbox =
       (document.getElementById("toggle-password") as HTMLInputElement) || null;
+
+    function updateButtonState() {
+      const ready =
+        emailInput.value.trim() !== "" && passwordInput.value.trim() !== "";
+      loginButton.disabled = !ready;
+      if (ready) {
+        loginButton.classList.remove("cursor-not-allowed", "opacity-50");
+        loginButton.classList.add("hover:bg-secondary", "cursor-pointer");
+      } else {
+        loginButton.classList.add("cursor-not-allowed", "opacity-50");
+        loginButton.classList.remove("hover:bg-secondary", "cursor-pointer");
+      }
+    }
+
+    emailInput.addEventListener("input", updateButtonState);
+    passwordInput.addEventListener("input", updateButtonState);
+
+    updateButtonState();
 
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -94,6 +114,9 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
           icon: true,
           dismissible: true,
         });
+        window.dispatchEvent(
+          new CustomEvent("toggleLoading", { detail: false })
+        );
         return;
       }
 
@@ -103,13 +126,8 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
-        const data = await response.json();
 
-        if (data) {
-          window.dispatchEvent(
-            new CustomEvent("toggleLoading", { detail: false })
-          );
-        }
+        const data = await response.json();
 
         if (response.ok) {
           window.toast({
@@ -119,8 +137,8 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
             icon: true,
             dismissible: true,
           });
-
           sessionStorage.setItem("token", data.token);
+
           window.location.href = "/landing";
         } else {
           window.toast({
@@ -140,6 +158,10 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
           icon: true,
           dismissible: true,
         });
+      } finally {
+        window.dispatchEvent(
+          new CustomEvent("toggleLoading", { detail: false })
+        );
       }
     });
   });
