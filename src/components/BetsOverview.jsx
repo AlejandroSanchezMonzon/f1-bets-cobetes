@@ -83,7 +83,7 @@ export default function BetsOverview() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/pilots")
+    fetch("/api/pilots?includeDeleted=true")
       .then((res) => res.json())
       .then((data) => {
         if (data.pilots && Array.isArray(data.pilots)) {
@@ -137,7 +137,7 @@ export default function BetsOverview() {
               <div className="flex-1">
                 <h2 className="text-xl font-bold mb-1">{race.race_name}</h2>
                 <p className="text-sm text-yellow-300">
-                  Ronda {race.round_number}· {" "}
+                  Ronda {race.round_number}·{" "}
                   {new Date(race.race_date).toLocaleDateString("es-ES", {
                     year: "numeric",
                     month: "long",
