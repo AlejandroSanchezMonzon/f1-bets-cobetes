@@ -359,26 +359,32 @@ export default function NextBetDetails() {
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 px-4 sm:px-6">
           {qualyData ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center px-6">
-              {Array.from({ length: 20 }, (_, index) => {
-                const pos = index + 1;
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
+              {Array.from({ length: 20 }, (_, i) => {
+                const pos = i + 1;
                 const pilotId = qualyData[`position${pos}`];
                 const pilotName =
                   pilotMapping[pilotId]?.name || `Piloto ${pilotId}`;
+
                 return (
-                  <div key={pos} className="flex items-center text-xs w-full">
-                    <span className="font-bold mr-2 text-gray-400">
-                      Pos {pos}:
+                  <div
+                    key={pos}
+                    className="flex flex-col items-center w-auto bg-white p-3 rounded-2xl shadow-md text-xs"
+                  >
+                    <span className="font-bold text-gray-700 mb-1 text-center">
+                      Pos {pos}
                     </span>
-                    <span className="text-gray-400">{pilotName}</span>
+                    <span className="text-gray-600 text-center">
+                      {pilotName}
+                    </span>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p className="mt-6 text-sm text-gray-400">
+            <p className="mt-6 text-sm text-gray-400 text-center">
               Qualy no publicada aún.
             </p>
           )}
