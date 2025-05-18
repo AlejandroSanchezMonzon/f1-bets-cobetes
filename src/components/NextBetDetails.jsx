@@ -387,7 +387,7 @@ export default function NextBetDetails() {
                             <img
                               src={`/flags/${driverNationality}.png`}
                               alt={driverNationality}
-                              className="inline-block w-6 h-4"
+                              className="inline-block w-6 h-4 object-contain border border-gray-300/50 rounded"
                             />
                           ) : (
                             <span className="text-gray-500">–</span>
@@ -440,7 +440,7 @@ export default function NextBetDetails() {
                         driverMapping[formData.position_predicted_first]
                           .nationality
                       }
-                      className="w-10 h-6 ml-4"
+                      className="w-10 h-6 ml-4 object-contain border border-gray-300/50 rounded"
                     />
                   )}
               </div>
@@ -474,7 +474,7 @@ export default function NextBetDetails() {
                         driverMapping[formData.position_predicted_second]
                           .nationality
                       }
-                      className="w-10 h-6 ml-4"
+                      className="w-10 h-6 ml-4 object-contain border border-gray-300/50 rounded"
                     />
                   )}
               </div>
@@ -508,7 +508,7 @@ export default function NextBetDetails() {
                         driverMapping[formData.position_predicted_third]
                           .nationality
                       }
-                      className="w-10 h-6 ml-4"
+                      className="w-10 h-6 ml-4 object-contain border border-gray-300/50 rounded"
                     />
                   )}
               </div>
