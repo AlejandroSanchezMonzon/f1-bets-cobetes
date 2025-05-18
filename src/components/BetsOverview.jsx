@@ -115,7 +115,7 @@ export default function BetsOverview() {
 
   return (
     <div className="mx-auto">
-      <h1 className="text-2xl md:text-3xl font-wide mb-8 text-primary">
+      <h1 className="text-2xl lg:text-3xl font-wide mb-8 text-primary">
         Historial de Predicciones y Resultados
       </h1>
       {races.map((race) => {
@@ -128,11 +128,11 @@ export default function BetsOverview() {
             key={race.id}
             className="bg-secondary rounded-md shadow-md p-4 mb-8 text-primary"
           >
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
               <img
                 src={flagSrc}
                 alt={`Bandera del circuito ${race.round_number}`}
-                className="w-16 md:w-20 h-auto object-contain border border-gray-300 rounded"
+                className="w-16 lg:w-20 h-auto object-contain border border-gray-300 rounded"
               />
               <div className="flex-1">
                 <h2 className="text-xl font-bold mb-1">{race.race_name}</h2>

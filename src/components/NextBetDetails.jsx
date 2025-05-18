@@ -323,14 +323,14 @@ export default function NextBetDetails() {
   return (
     <div className="p-4 rounded-md shadow-md bg-secondary">
       <div className="flex flex-col">
-        <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-8">
-          <div className="flex flex-col md:flex-row items-center">
+        <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-8">
+          <div className="flex flex-col lg:flex-row items-center">
             <img
               src={`/circuits/flags/${raceData.round_number}.png`}
               alt={raceData.race_name}
-              className="w-40 h-auto md:mr-4 mb-4 object-contain border border-gray-300 rounded"
+              className="w-40 h-auto lg:mr-4 mb-4 object-contain border border-gray-300 rounded"
             />
-            <h2 className="text-xl text-center md:text-left font-bold w-75">
+            <h2 className="text-xl text-center lg:text-left font-bold w-75">
               {raceData.race_name}
             </h2>
           </div>

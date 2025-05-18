@@ -63,14 +63,14 @@ export default function NextRaceCountdown() {
         />
       </div>
       <div className="mt-4 text-center sm:mt-0 sm:ml-6 sm:text-left w-full">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-2">
+        <div className="flex flex-col lg:flex-row justify-between items-center gap-2">
           <h2 className="text-2xl font-wide">Próxima carrera</h2>
           <p className="text-center w-fit border-primary border-2 p-2 mb-2 rounded bg-gradient-to-br from-secondary via-footer to-secondary">
             {race.raceType.toUpperCase()}
           </p>
         </div>
         <p className="text-xl">
-          <span className="font-wide mr-2 md:mr-4"># {race.roundNumber}</span>{" "}
+          <span className="font-wide mr-2 lg:mr-4"># {race.roundNumber}</span>{" "}
           {race.raceName}
         </p>
         <p className="mt-2 text-3xl font-extrabold text-yellow-300">
