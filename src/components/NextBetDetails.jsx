@@ -359,37 +359,53 @@ export default function NextBetDetails() {
           </div>
         </div>
 
-        <div className="mt-6 px-4 sm:px-6">
-        {qualyData ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
-              {Array.from({ length: 20 }, (_, i) => {
-                const pos = i + 1;
-                const driverId = qualyData[`position${pos}`];
-                const driverName =
-                  driverMapping[driverId]?.name || `Piloto ${driverId}`;
+        <div className="mt-6">
+          {qualyData ? (
+            <div className="overflow-x-auto px-4 sm:px-6">
+              <table className="min-w-full table-auto text-sm text-gray-100 border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-600 bg-footer">
+                    <th className="py-2 px-3 text-center">Posición</th>
+                    <th className="py-2 px-3 text-center">Piloto</th>
+                    <th className="py-2 px-3 text-center">Nacionalidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: 20 }, (_, i) => {
+                    const pos = i + 1;
+                    const driverId = qualyData[`position${pos}`];
+                    const driver = driverMapping[driverId];
+                    const driverName = driver?.name || `Driver ${driverId}`;
+                    const driverNationality = driver?.nationality;
 
-                return (
-                  <div
-                    key={pos}
-                    className="flex flex-col items-center w-auto bg-white p-3 rounded-2xl shadow-md text-xs"
-                  >
-                    <span className="font-bold text-gray-700 mb-1 text-center">
-                      Pos {pos}
-                    </span>
-                    <span className="text-gray-600 text-center">
-                      {driverName}
-                    </span>
-                  </div>
-                );
-              })}
+                    return (
+                      <tr key={pos} className="border-t border-gray-700">
+                        <td className="py-2 px-3 text-center">{pos}</td>
+                        <td className="py-2 px-3 text-center">{driverName}</td>
+                        <td className="py-2 px-3 text-center">
+                          {driverNationality ? (
+                            <img
+                              src={`/flags/${driverNationality}.png`}
+                              alt={driverNationality}
+                              className="inline-block w-6 h-4"
+                            />
+                          ) : (
+                            <span className="text-gray-500">–</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           ) : (
             <p className="mt-6 text-sm text-gray-400 text-center">
               Qualy no publicada aún.
             </p>
           )}
-          </div>
         </div>
+      </div>
 
       <div className="mt-6 border-t border-primary pt-4">
         <h3 className="text-lg font-bold mb-2">Tu predicción</h3>
@@ -512,7 +528,7 @@ export default function NextBetDetails() {
             {hasResults
               ? "Resultados publicados. No se puede realizar la predicción."
               : qualyData
-              ? "Predicción cerrada (quedan menos de 12 h. para el inicio de la carrera)."
+              ? "Predicción cerrada (quedan menos de 30 minutos para el inicio de la carrera)."
               : "Qualy no publicada aún. No se puede realizar la predicción."}
           </p>
         )}
