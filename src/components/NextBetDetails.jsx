@@ -391,7 +391,6 @@ export default function NextBetDetails() {
           </p>
         )}
         </div>
-      </div>
 
       <div className="mt-6 border-t border-primary pt-4">
         <h3 className="text-lg font-bold mb-2">Tu predicción</h3>
