@@ -66,7 +66,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     ) as HTMLButtonElement;
 
     let allRaces: any = [];
-    let pilots: any = [];
+    let drivers: any = [];
     let currentResult: any = null;
     let isUpdateMode = false;
 
@@ -134,13 +134,13 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
 
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
-      defaultOption.text = "Seleccione piloto";
+      defaultOption.text = "Seleccione drivero";
       select.appendChild(defaultOption);
 
-      pilots.forEach((pilot: any) => {
+      drivers.forEach((driver: any) => {
         const option = document.createElement("option");
-        option.value = pilot.id.toString();
-        option.text = pilot.name;
+        option.value = driver.id.toString();
+        option.text = driver.name;
         select.appendChild(option);
       });
 
@@ -193,15 +193,15 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       });
     }
 
-    function loadPilots() {
-      fetch("/api/pilots")
+    function loadDrivers() {
+      fetch("/api/drivers")
         .then((res) => res.json())
         .then((data) => {
-          if (data.pilots && Array.isArray(data.pilots)) {
-            pilots = data.pilots;
+          if (data.drivers && Array.isArray(data.drivers)) {
+            drivers = data.drivers;
           }
         })
-        .catch((err) => console.error("Error al cargar los pilotos:", err));
+        .catch((err) => console.error("Error al cargar los driveros:", err));
     }
 
     function loadResult(raceId: string) {
@@ -389,7 +389,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     });
 
     loadRaces();
-    loadPilots();
+    loadDrivers();
     toggleSubmitButton();
   });
 </script>

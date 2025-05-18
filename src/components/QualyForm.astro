@@ -70,7 +70,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       "submit-button-qualy"
     ) as HTMLButtonElement;
 
-    let pilots: any = [];
+    let drivers: any = [];
     let currentQualy: any = null;
     let isUpdateMode = false;
 
@@ -91,13 +91,13 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
 
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
-      defaultOption.text = "Seleccione piloto";
+      defaultOption.text = "Seleccione drivero";
       select.appendChild(defaultOption);
 
-      pilots.forEach((pilot: any) => {
+      drivers.forEach((driver: any) => {
         const option = document.createElement("option");
-        option.value = pilot.id;
-        option.text = pilot.name;
+        option.value = driver.id;
+        option.text = driver.name;
         select.appendChild(option);
       });
 
@@ -117,17 +117,17 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     function validateForm() {
       if (!raceSelect.value) return false;
 
-      let selectedPilots = [];
+      let selectedDrivers = [];
       for (let i = 1; i <= 20; i++) {
         const select = document.getElementById(
           "driver-" + i
         ) as HTMLSelectElement;
         if (!select) return false;
         if (select.value === "") return false;
-        selectedPilots.push(select.value);
+        selectedDrivers.push(select.value);
       }
-      const uniquePilots = new Set(selectedPilots);
-      return uniquePilots.size === selectedPilots.length;
+      const uniqueDrivers = new Set(selectedDrivers);
+      return uniqueDrivers.size === selectedDrivers.length;
     }
 
     function toggleSubmitButton() {
@@ -155,15 +155,15 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         .catch((err) => console.error("Error al cargar las carreras:", err));
     }
 
-    function loadPilots() {
-      fetch("/api/pilots")
+    function loadDrivers() {
+      fetch("/api/drivers")
         .then((res) => res.json())
         .then((data) => {
-          if (data.pilots && Array.isArray(data.pilots)) {
-            pilots = data.pilots;
+          if (data.drivers && Array.isArray(data.drivers)) {
+            drivers = data.drivers;
           }
         })
-        .catch((err) => console.error("Error al cargar los pilotos:", err));
+        .catch((err) => console.error("Error al cargar los driveros:", err));
     }
 
     function filterRaces() {
@@ -322,7 +322,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     });
 
     loadRaces();
-    loadPilots();
+    loadDrivers();
     toggleSubmitButton();
   });
 </script>

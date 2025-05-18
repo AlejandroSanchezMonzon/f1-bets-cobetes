@@ -69,7 +69,7 @@ const weatherIcons = {
 
 export default function NextBetDetails() {
   const [raceData, setRaceData] = useState(null);
-  const [pilotMapping, setPilotMapping] = useState({});
+  const [driverMapping, setDriverMapping] = useState({});
   const [qualyData, setQualyData] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
   const [prediction, setPrediction] = useState(null);
@@ -97,22 +97,22 @@ export default function NextBetDetails() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/pilots")
+    fetch("/api/drivers")
       .then((res) => res.json())
       .then((data) => {
-        if (data.pilots && Array.isArray(data.pilots)) {
+        if (data.drivers && Array.isArray(data.drivers)) {
           const mapping = {};
-          data.pilots.forEach((pilot) => {
-            mapping[pilot.id] = {
-              name: pilot.name,
-              nationality: pilot.nationality,
+          data.drivers.forEach((driver) => {
+            mapping[driver.id] = {
+              name: driver.name,
+              nationality: driver.nationality,
             };
           });
-          setPilotMapping(mapping);
+          setDriverMapping(mapping);
         }
       })
       .catch((err) =>
-        console.error("Error al obtener la lista de pilotos:", err)
+        console.error("Error al obtener la lista de driveros:", err)
       );
   }, []);
 
@@ -364,9 +364,9 @@ export default function NextBetDetails() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
               {Array.from({ length: 20 }, (_, i) => {
                 const pos = i + 1;
-                const pilotId = qualyData[`position${pos}`];
-                const pilotName =
-                  pilotMapping[pilotId]?.name || `Piloto ${pilotId}`;
+                const driverId = qualyData[`position${pos}`];
+                const driverName =
+                  driverMapping[driverId]?.name || `Drivero ${driverId}`;
 
                 return (
                   <div
@@ -377,7 +377,7 @@ export default function NextBetDetails() {
                       Pos {pos}
                     </span>
                     <span className="text-gray-600 text-center">
-                      {pilotName}
+                      {driverName}
                     </span>
                   </div>
                 );
@@ -406,22 +406,22 @@ export default function NextBetDetails() {
                   onChange={handleChange}
                   className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
-                  <option value="">Seleccione piloto</option>
-                  {Object.entries(pilotMapping).map(([id, pilot]) => (
+                  <option value="">Seleccione drivero</option>
+                  {Object.entries(driverMapping).map(([id, driver]) => (
                     <option key={id} value={id}>
-                      {pilot.name}
+                      {driver.name}
                     </option>
                   ))}
                 </select>
                 {formData.position_predicted_first &&
-                  pilotMapping[formData.position_predicted_first] && (
+                  driverMapping[formData.position_predicted_first] && (
                     <img
                       src={`/flags/${
-                        pilotMapping[formData.position_predicted_first]
+                        driverMapping[formData.position_predicted_first]
                           .nationality
                       }.png`}
                       alt={
-                        pilotMapping[formData.position_predicted_first]
+                        driverMapping[formData.position_predicted_first]
                           .nationality
                       }
                       className="w-10 h-6 ml-4"
@@ -440,22 +440,22 @@ export default function NextBetDetails() {
                   onChange={handleChange}
                   className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
-                  <option value="">Seleccione piloto</option>
-                  {Object.entries(pilotMapping).map(([id, pilot]) => (
+                  <option value="">Seleccione drivero</option>
+                  {Object.entries(driverMapping).map(([id, driver]) => (
                     <option key={id} value={id}>
-                      {pilot.name}
+                      {driver.name}
                     </option>
                   ))}
                 </select>
                 {formData.position_predicted_second &&
-                  pilotMapping[formData.position_predicted_second] && (
+                  driverMapping[formData.position_predicted_second] && (
                     <img
                       src={`/flags/${
-                        pilotMapping[formData.position_predicted_second]
+                        driverMapping[formData.position_predicted_second]
                           .nationality
                       }.png`}
                       alt={
-                        pilotMapping[formData.position_predicted_second]
+                        driverMapping[formData.position_predicted_second]
                           .nationality
                       }
                       className="w-10 h-6 ml-4"
@@ -474,22 +474,22 @@ export default function NextBetDetails() {
                   onChange={handleChange}
                   className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
-                  <option value="">Seleccione piloto</option>
-                  {Object.entries(pilotMapping).map(([id, pilot]) => (
+                  <option value="">Seleccione drivero</option>
+                  {Object.entries(driverMapping).map(([id, driver]) => (
                     <option key={id} value={id}>
-                      {pilot.name}
+                      {driver.name}
                     </option>
                   ))}
                 </select>
                 {formData.position_predicted_third &&
-                  pilotMapping[formData.position_predicted_third] && (
+                  driverMapping[formData.position_predicted_third] && (
                     <img
                       src={`/flags/${
-                        pilotMapping[formData.position_predicted_third]
+                        driverMapping[formData.position_predicted_third]
                           .nationality
                       }.png`}
                       alt={
-                        pilotMapping[formData.position_predicted_third]
+                        driverMapping[formData.position_predicted_third]
                           .nationality
                       }
                       className="w-10 h-6 ml-4"

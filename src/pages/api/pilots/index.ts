@@ -12,14 +12,14 @@ export const GET: APIRoute = async ({ url }) => {
     const result = await db.execute({
       sql: `
         SELECT id, name, nationality
-        FROM Pilots
+        FROM Drivers
         ${whereClause}
       `,
       args: [],
     });
 
     return res(
-      JSON.stringify({ pilots: result.rows }),
+      JSON.stringify({ drivers: result.rows }),
       { status: 200 }
     );
   } catch (error) {

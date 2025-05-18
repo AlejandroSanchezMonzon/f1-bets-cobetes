@@ -6,7 +6,7 @@ export default function BetsOverview() {
   const [predictionsByRace, setPredictionsByRace] = useState({});
   const [resultsByRace, setResultsByRace] = useState({});
   const [userMapping, setUserMapping] = useState({});
-  const [pilotMapping, setPilotMapping] = useState({});
+  const [driverMapping, setDriverMapping] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -83,18 +83,18 @@ export default function BetsOverview() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/pilots?includeDeleted=true")
+    fetch("/api/drivers?includeDeleted=true")
       .then((res) => res.json())
       .then((data) => {
-        if (data.pilots && Array.isArray(data.pilots)) {
+        if (data.drivers && Array.isArray(data.drivers)) {
           const mapping = {};
-          data.pilots.forEach((pilot) => {
-            mapping[pilot.id] = pilot.name;
+          data.drivers.forEach((driver) => {
+            mapping[driver.id] = driver.name;
           });
-          setPilotMapping(mapping);
+          setDriverMapping(mapping);
         }
       })
-      .catch((err) => console.error("Error fetching pilots:", err));
+      .catch((err) => console.error("Error fetching drivers:", err));
   }, []);
 
   useEffect(() => {
@@ -103,11 +103,11 @@ export default function BetsOverview() {
       Object.keys(predictionsByRace).length > 0 &&
       Object.keys(resultsByRace).length > 0 &&
       Object.keys(userMapping).length > 0 &&
-      Object.keys(pilotMapping).length > 0
+      Object.keys(driverMapping).length > 0
     ) {
       setLoading(false);
     }
-  }, [races, predictionsByRace, resultsByRace, userMapping, pilotMapping]);
+  }, [races, predictionsByRace, resultsByRace, userMapping, driverMapping]);
 
   if (loading) {
     return <Loader />;
@@ -174,21 +174,21 @@ export default function BetsOverview() {
                           className="py-2 px-3 text-center"
                           style={{ backgroundColor: "#C0C0C0" }}
                         >
-                          {pilotMapping[result.position_second] ||
+                          {driverMapping[result.position_second] ||
                             result.position_second}
                         </td>
                         <td
                           className="py-2 px-3 text-center"
                           style={{ backgroundColor: "#FFD700" }}
                         >
-                          {pilotMapping[result.position_first] ||
+                          {driverMapping[result.position_first] ||
                             result.position_first}
                         </td>
                         <td
                           className="py-2 px-3 text-center"
                           style={{ backgroundColor: "#CD7F32" }}
                         >
-                          {pilotMapping[result.position_third] ||
+                          {driverMapping[result.position_third] ||
                             result.position_third}
                         </td>
                       </tr>
@@ -224,15 +224,15 @@ export default function BetsOverview() {
                               `User ${pred.user_id}`}
                           </td>
                           <td className="py-2 px-2">
-                            {pilotMapping[pred.position_predicted_first] ||
+                            {driverMapping[pred.position_predicted_first] ||
                               pred.position_predicted_first}
                           </td>
                           <td className="py-2 px-2">
-                            {pilotMapping[pred.position_predicted_second] ||
+                            {driverMapping[pred.position_predicted_second] ||
                               pred.position_predicted_second}
                           </td>
                           <td className="py-2 px-2">
-                            {pilotMapping[pred.position_predicted_third] ||
+                            {driverMapping[pred.position_predicted_third] ||
                               pred.position_predicted_third}
                           </td>
                           <td className="py-2 px-2 text-right">
