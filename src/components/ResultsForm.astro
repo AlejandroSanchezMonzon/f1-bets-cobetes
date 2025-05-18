@@ -134,7 +134,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
 
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
-      defaultOption.text = "Seleccione drivero";
+      defaultOption.text = "Seleccione piloto";
       select.appendChild(defaultOption);
 
       drivers.forEach((driver: any) => {
@@ -201,7 +201,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
             drivers = data.drivers;
           }
         })
-        .catch((err) => console.error("Error al cargar los driveros:", err));
+        .catch((err) => console.error("Error al cargar los pilotos:", err));
     }
 
     function loadResult(raceId: string) {

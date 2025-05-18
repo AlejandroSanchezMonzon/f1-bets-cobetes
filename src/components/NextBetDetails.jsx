@@ -112,7 +112,7 @@ export default function NextBetDetails() {
         }
       })
       .catch((err) =>
-        console.error("Error al obtener la lista de driveros:", err)
+        console.error("Error al obtener la lista de pilotos:", err)
       );
   }, []);
 
@@ -366,7 +366,7 @@ export default function NextBetDetails() {
                 const pos = i + 1;
                 const driverId = qualyData[`position${pos}`];
                 const driverName =
-                  driverMapping[driverId]?.name || `Drivero ${driverId}`;
+                  driverMapping[driverId]?.name || `Piloto ${driverId}`;
 
                 return (
                   <div
@@ -406,7 +406,7 @@ export default function NextBetDetails() {
                   onChange={handleChange}
                   className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
-                  <option value="">Seleccione drivero</option>
+                  <option value="">Seleccione piloto</option>
                   {Object.entries(driverMapping).map(([id, driver]) => (
                     <option key={id} value={id}>
                       {driver.name}
@@ -440,7 +440,7 @@ export default function NextBetDetails() {
                   onChange={handleChange}
                   className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
-                  <option value="">Seleccione drivero</option>
+                  <option value="">Seleccione piloto</option>
                   {Object.entries(driverMapping).map(([id, driver]) => (
                     <option key={id} value={id}>
                       {driver.name}
@@ -474,7 +474,7 @@ export default function NextBetDetails() {
                   onChange={handleChange}
                   className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
                 >
-                  <option value="">Seleccione drivero</option>
+                  <option value="">Seleccione piloto</option>
                   {Object.entries(driverMapping).map(([id, driver]) => (
                     <option key={id} value={id}>
                       {driver.name}
