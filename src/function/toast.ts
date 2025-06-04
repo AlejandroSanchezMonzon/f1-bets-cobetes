@@ -172,7 +172,7 @@ export const butterup: ButterupProps = {
     if (title != null) {
       const toastTitle = document.createElement("div");
       toastTitle.className = "title";
-      toastTitle.innerHTML = title;
+      toastTitle.textContent = title;
       toastDesc.appendChild(toastTitle);
     }
 
@@ -180,7 +180,7 @@ export const butterup: ButterupProps = {
     if (message != null) {
       const toastMessage = document.createElement("div");
       toastMessage.className = "message";
-      toastMessage.innerHTML = message;
+      toastMessage.textContent = message;
       toastDesc.appendChild(toastMessage);
     }
 
