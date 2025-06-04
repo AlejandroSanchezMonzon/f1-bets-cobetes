@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ request }) => {
 
   try {
     const result = await db.execute({
-      sql: "SELECT race_weekend_id, position_first, position_second, position_third created_at FROM Results WHERE deleted_at IS NULL",
+      sql: "SELECT race_weekend_id, position_first, position_second, position_third, created_at FROM Results WHERE deleted_at IS NULL",
       args: [],
     });
 
