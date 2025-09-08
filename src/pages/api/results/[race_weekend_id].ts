@@ -58,3 +58,25 @@ export const PATCH: APIRoute = async ({ params, request }) => {
     return res(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };
+
+export const DELETE: APIRoute = async ({ params, request }) => {
+  const { race_weekend_id } = params;
+  const authHeader = request.headers.get("Authorization");
+  const adminId = await checkAdmin(authHeader);
+  if (!adminId) {
+    return res(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
+  try {
+    await db.execute({
+      sql: "UPDATE Results SET deleted_at = CURRENT_TIMESTAMP WHERE race_weekend_id = ?",
+      args: [race_weekend_id as string],
+    });
+
+    return res(JSON.stringify({ message: "Resultados eliminados" }), {
+      status: 200,
+    });
+  } catch (error) {
+    return res(JSON.stringify({ error: "Server error" }), { status: 500 });
+  }
+};

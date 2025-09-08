@@ -44,6 +44,13 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     >
       Guardar Resultados
     </button>
+    <button
+      type="button"
+      id="delete-button-results"
+      class="text-primary bg-red-500 border border-gray-300 hover:bg-red-600 font-regular rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center cursor-pointer hidden"
+    >
+      Eliminar Resultados
+    </button>
   </div>
 </form>
 
@@ -63,6 +70,9 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     const form = document.getElementById("results-form") as HTMLFormElement;
     const submitButton = document.getElementById(
       "submit-button-results"
+    ) as HTMLButtonElement;
+    const deleteButton = document.getElementById(
+      "delete-button-results"
     ) as HTMLButtonElement;
 
     let allRaces: any = [];
@@ -215,10 +225,12 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
             currentResult = data.result;
             isUpdateMode = true;
             submitButton.textContent = "Actualizar Resultados";
+            deleteButton.classList.remove("hidden");
           } else {
             currentResult = null;
             isUpdateMode = false;
             submitButton.textContent = "Guardar Resultados";
+            deleteButton.classList.add("hidden");
           }
           populateResultSelects();
         })
@@ -258,6 +270,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       } else {
         podiumContainer.innerHTML = "";
         submitButton.textContent = "Guardar Resultados";
+        deleteButton.classList.add("hidden");
         toggleSubmitButton();
       }
     });
@@ -378,6 +391,51 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         })
         .catch((err) => {
           console.error("Error al registrar los resultados:", err);
+          window.toast({
+            title: "Error",
+            message: "Server error",
+            type: "error",
+            dismissible: true,
+            icon: true,
+          });
+        });
+    });
+
+    deleteButton.addEventListener("click", () => {
+      if (!currentResult) return;
+      if (!confirm("¿Eliminar resultados?")) return;
+      window.dispatchEvent(new CustomEvent("toggleLoading", { detail: true }));
+      const token = sessionStorage.getItem("token") || "";
+      fetch(`/api/results/${currentResult.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          window.dispatchEvent(new CustomEvent("toggleLoading", { detail: false }));
+          if (data.error) {
+            window.toast({
+              title: "Error",
+              message: data.error,
+              type: "error",
+              dismissible: true,
+              icon: true,
+            });
+          } else {
+            window.toast({
+              title: "Éxito",
+              message: "Resultados eliminados correctamente",
+              type: "success",
+              dismissible: true,
+              icon: true,
+            });
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          }
+        })
+        .catch((err) => {
+          console.error("Error al eliminar los resultados:", err);
           window.toast({
             title: "Error",
             message: "Server error",
