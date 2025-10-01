@@ -1,115 +1,105 @@
-<img style="display: block; margin: auto; object-fit: cover; width: 50%;" src="https://github.com/user-attachments/assets/9e222c62-03ad-44b0-8ac0-a34f7d46340c" alt="Logo oficial de la aplicación web de F1 Bets Cobetes" />
+﻿<img style="display: block; margin: auto; object-fit: cover; width: 50%;" src="https://github.com/user-attachments/assets/9e222c62-03ad-44b0-8ac0-a34f7d46340c" alt="Logo oficial de la aplicación web de F1 Bets Cobetes" />
 
 # F1 Bets Cobetes
 
-F1 Bets Cobetes es una aplicación web diseñada para la gestión y realización de apuestas en eventos de Fórmula 1. La plataforma está pensada para ofrecer a los aficionados una experiencia interactiva, permitiéndoles iniciar sesión, gestionar su perfil y participar en apuestas en vivo durante las carreras.
+F1 Bets Cobetes es una aplicación web para gestionar apuestas lúdicas durante los fines de semana de Fórmula 1. Los usuarios pueden iniciar sesión, registrar predicciones de podio y seguir el ranking general de la comunidad en tiempo real.
 
-## Tabla de Contenidos
-
-- [Descripción del Proyecto](#descripción-del-proyecto)
+## Tabla de contenidos
+- [Descripción del proyecto](#descripción-del-proyecto)
 - [Características](#características)
-- [Tecnologías Utilizadas](#tecnologías-utilizadas)
-- [Instalación](#instalación)
+- [Tecnologías utilizadas](#tecnologías-utilizadas)
+- [Primeros pasos](#primeros-pasos)
+  - [Requisitos](#requisitos)
+  - [Instalación](#instalación)
+  - [Variables de entorno](#variables-de-entorno)
+  - [Comandos disponibles](#comandos-disponibles)
+- [Arquitectura rápida](#arquitectura-rápida)
 - [Uso](#uso)
 - [Contribuciones](#contribuciones)
 - [Licencia](#licencia)
 - [Contacto](#contacto)
 
-## Descripción del Proyecto
-
-F1 Bets Cobetes es una plataforma web orientada a los entusiastas de la Fórmula 1. La aplicación permite a los usuarios:
-- Iniciar sesión de manera segura.
-- Realizar apuestas en tiempo real durante las carreras.
-- Acceder a un panel de administración (según rol) para gestionar la plataforma.
-
-La interfaz ha sido diseñada para ofrecer una experiencia óptima en dispositivos tanto móviles como de escritorio.
+## Descripción del proyecto
+La plataforma combina páginas Astro con islas de React para ofrecer una experiencia ágil en escritorio y móvil. El backend expone rutas API serverless (Vercel) que consultan una base de datos LibSQL/Turso para almacenar pilotos, carreras, predicciones y resultados.
 
 ## Características
+- **Autenticación con JWT**: Inicio de sesión por correo/contraseña y refresco de información de perfil.
+- **Predicciones de carrera**: Formulario dinámico con validaciones y bloqueo 30 minutos antes de cada evento.
+- **Panel administrativo**: Gestión de resultados y clasificación (qualy) con recálculo automático de puntos.
+- **Ranking global**: Vista React con visualizaciones de puntos totales y últimos resultados.
+- **Experiencia responsiva**: Estilos Tailwind 4 y tipografías personalizadas inspiradas en la F1.
 
-- **Inicio de Sesión y Gestión de Usuarios:** Sistema de autenticación mediante correo electrónico y contraseña.
-- **Apuestas en Vivo:** Participa en apuestas durante los eventos de Fórmula 1.
-- **Panel Administrativo:** Herramientas para la administración y gestión de la plataforma.
-- **Diseño Responsivo:** Optimizado para múltiples dispositivos, asegurando una experiencia fluida y moderna.
+## Tecnologías utilizadas
+- [Astro 5](https://astro.build/) con salida `server` y adaptador para Vercel.
+- [React 19](https://react.dev/) para componentes interactivos.
+- [Tailwind CSS 4](https://tailwindcss.com/) + tokens definidos en `src/styles/global.css`.
+- [LibSQL / Turso](https://turso.tech/) como base de datos relacional ligera.
+- [JSON Web Tokens](https://jwt.io/) para autenticación y control de roles.
 
-## Tecnologías Utilizadas
+## Primeros pasos
 
-El proyecto se ha desarrollado utilizando las siguientes tecnologías:
+### Requisitos
+- Node.js 18 o superior.
+- Gestor de paquetes compatible (`pnpm`, `npm` o `yarn`). El repositorio incluye `pnpm-lock.yaml`.
 
-- **Astro:** Framework moderno para la construcción de sitios web.
-- **TypeScript:** Superset de JavaScript que añade tipado estático para un código más robusto.
-- **JavaScript:** Lenguaje de programación para la lógica de la aplicación.
-- **CSS & Tailwind:** Para el estilizado de la interfaz.
+### Instalación
+```bash
+git clone https://github.com/AlejandroSanchezMonzon/f1-bets-cobetes.git
+cd f1-bets-cobetes
+pnpm install # o npm install / yarn install
+```
 
-## Instalación
+### Variables de entorno
+Crea un archivo `.env` en la raíz con las claves necesarias:
 
-Para clonar y ejecutar el proyecto de forma local, sigue estos pasos:
+| Variable | Descripción |
+| --- | --- |
+| `JWT_SECRET` | Clave usada para firmar y verificar los tokens JWT. |
+| `TURSO_DATABASE_URL` | URL de conexión a la instancia de LibSQL/Turso. |
+| `TURSO_AUTH_TOKEN` | Token de autenticación para la base de datos. |
 
-1. **Clona el repositorio:**
-   ```bash
-   git clone https://github.com/AlejandroSanchezMonzon/f1-bets-cobetes.git
-   ```
+> ⚠️ **Nunca** publiques estas variables en el repositorio ni en commits.
 
-2. **Accede al directorio del proyecto:**
-   ```bash
-   cd f1-bets-cobetes
-   ```
+### Comandos disponibles
+| Comando | Descripción |
+| --- | --- |
+| `pnpm dev` | Inicia el servidor de desarrollo en `http://localhost:4321`. |
+| `pnpm build` | Genera la versión lista para producción. |
+| `pnpm preview` | Sirve la build generada para verificación local. |
+| `pnpm astro ...` | Acceso directo a la CLI de Astro. |
 
-3. **Instala las dependencias:**
-   ```bash
-   npm install
-   ```
-   o, si usas Yarn:
-   ```bash
-   yarn install
-   ```
-
-4. **Inicia el servidor de desarrollo:**
-   ```bash
-   npm run dev
-   ```
-   o, si usas Yarn:
-   ```bash
-   yarn dev
-   ```
-
-5. **Accede a la aplicación:**
-   Abre tu navegador y visita `http://localhost:4321` (el puerto predeterminado de Astro) para ver la aplicación en funcionamiento.
+## Arquitectura rápida
+- Frontend híbrido: Astro para estructura y React (islas `client:load`) para vistas como ranking, countdown o historial de apuestas.
+- API interna en `src/pages/api/**`, con helpers reutilizables en `@/utils` y acceso a base de datos vía `@/lib/turso`.
+- Modelo de datos documentado en [`db/schema.sql`](db/schema.sql) y ampliado en los archivos de la carpeta [`context`](context/).
+- Eliminación lógica (`deleted_at`) en todas las tablas para preservar historiales.
 
 ## Uso
-
-La versión en vivo de la aplicación está disponible en:
-- [F1 Bets Cobetes](https://f1-bets-cobetes.vercel.app)
-
-Utiliza la plataforma para iniciar sesión, gestionar tu perfil y participar en apuestas durante los eventos de Fórmula 1.
+La versión en vivo está disponible en [f1-bets-cobetes.vercel.app](https://f1-bets-cobetes.vercel.app). Inicia sesión con tus credenciales para:
+- Registrar predicciones antes de cada carrera.
+- Revisar el ranking general y los resultados publicados.
+- (Solo administradores) Actualizar resultados oficiales, datos de qualy y recalcular puntuaciones.
 
 ## Contribuciones
-
-¡Las contribuciones son bienvenidas! Para colaborar, sigue estos pasos:
-
-1. Realiza un fork del repositorio.
-2. Crea una nueva rama para tu funcionalidad o corrección:
+¡Las contribuciones son bienvenidas! Sigue estos pasos:
+1. Haz un fork del repositorio y crea una rama descriptiva:
    ```bash
-   git checkout -b feature/nueva-caracteristica
+   git checkout -b feature/nueva-funcionalidad
    ```
-3. Realiza los cambios necesarios y haz un commit:
+2. Implementa tus cambios, respeta las convenciones documentadas en [`context/RULES.md`](context/RULES.md).
+3. Ejecuta los comandos de verificación que correspondan y actualiza la documentación si aplica.
+4. Realiza commit y push de la rama:
    ```bash
-   git commit -m "Agrega nueva característica"
+   git commit -m "feat: agrega nueva funcionalidad"
+   git push origin feature/nueva-funcionalidad
    ```
-4. Envía la rama a tu fork:
-   ```bash
-   git push origin feature/nueva-caracteristica
-   ```
-5. Abre un Pull Request detallando los cambios realizados.
+5. Abre un Pull Request describiendo el problema resuelto, pruebas realizadas y capturas relevantes.
 
 ## Licencia
-
-Este proyecto se distribuye bajo la [licencia MIT](LICENSE).
+Este proyecto se distribuye bajo la licencia [MIT](LICENSE).
 
 ## Contacto
-
-Para consultas, sugerencias o colaboraciones, puedes contactar a:
-
-- **Alejandro Sánchez Monzón**  [GitHub](https://github.com/AlejandroSanchezMonzon)
+- **Alejandro Sánchez Monzón** · [GitHub](https://github.com/AlejandroSanchezMonzon)
 
 ---
 
