@@ -1,4 +1,4 @@
-﻿# AGENT ONBOARDING
+# AGENT ONBOARDING
 
 Welcome to the F1 Bets Cobetes workspace. This guide gives AI agents and new contributors the minimum shared context required to extend the project without breaking existing conventions. Use the linked documents for deep dives.
 
@@ -15,6 +15,9 @@ Welcome to the F1 Bets Cobetes workspace. This guide gives AI agents and new con
 - [`RULES.md`](./RULES.md): coding patterns, naming, auth rules.
 - [`TECHNICAL_CLUES.md`](./TECHNICAL_CLUES.md): operational tips, external services, testing gaps.
 
+## Database Schema
+- [`db/schema.sql`](../db/schema.sql): canonical schema with current tables. Review it before updating queries or adding fields.
+
 ## Workflow Highlights
 1. **Auth & Roles**: JWT tokens minted from `/api/auth/login`. Admin-only endpoints call `checkAdmin`, and UI hides admin controls for non-admins. See `RULES.md` for patterns.
 2. **Data CRUD**: Turso SQL executed via `db.execute` with positional parameters. Soft deletes are the norm; updates use dynamic SQL builders.
@@ -27,7 +30,7 @@ Welcome to the F1 Bets Cobetes workspace. This guide gives AI agents and new con
 - Revisit `TECHNICAL_CLUES.md` for weather API usage, loading overlays, toast notifications, and other reusable pieces.
 
 ## Contact & Ownership
-- Primary maintainer: Alejandro Sánchez Monzón (see repo README).
+- Primary maintainer: Alejandro S�nchez Monz�n (see repo README).
 - Deployment: Vercel (`astro.config.mjs` adapter configured).
 
 Keep documents synchronized when conventions change.
