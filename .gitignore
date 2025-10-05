@@ -25,3 +25,7 @@ db/schema.sql
 
 # jetbrains setting folder
 .idea/
+
+# BMAD (local only)
+.bmad-core/
+.bmad-*/

@@ -7,7 +7,10 @@
     "start": "astro dev --remote",
     "build": "astro build --remote",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "bmad:refresh": "bmad-method install -f -i codex",
+    "bmad:list": "bmad-method list:agents",
+    "bmad:validate": "bmad-method validate"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.7",
