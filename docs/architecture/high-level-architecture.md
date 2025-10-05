@@ -1,6 +1,6 @@
 # High Level Architecture
 ## Technical Summary
-Cobetes - F1 Bets runs as an Astro 5 server-rendered application deployed on Vercel's serverless runtime. Static Astro pages handle layout and SEO, while React 19 islands (mounted with `client:load`) power interactive views such as the betting form, ranking tables, and countdown timers. Backend capabilities are exposed through REST endpoints under `src/pages/api/**`; each endpoint executes within Vercel's function environment and uses the shared Turso (LibSQL) client located in `@/lib/turso`. Clients authenticate with JWTs signed by `JWT_SECRET` and stored in `sessionStorage`. Helpers in `@/utils/auth` validate tokens on every request. Frontend workflows dispatch `window.toast` and `toggleLoading` events to standardize notifications and loading indicators. All persistence uses handwritten SQL with soft deletes (`deleted_at`) to preserve history.
+Cobetes - F1 Bets runs as an Astro 5.14.1 server-rendered application deployed on Vercel's serverless runtime. Static Astro pages handle layout and SEO, while React 19 islands (mounted with `client:load`) power interactive views such as the betting form, ranking tables, and countdown timers. Backend capabilities are exposed through REST endpoints under `src/pages/api/**`; each endpoint executes within Vercel's function environment and uses the shared Turso (LibSQL) client located in `@/lib/turso`. Clients authenticate with JWTs signed by `JWT_SECRET` and stored in `sessionStorage`. Helpers in `@/utils/auth` validate tokens on every request. Frontend workflows dispatch `window.toast` and `toggleLoading` events to standardize notifications and loading indicators. All persistence uses handwritten SQL with soft deletes (`deleted_at`) to preserve history.
 
 ## Platform and Infrastructure Choice
 - **Option A - Vercel + Turso (current setup)**
@@ -15,7 +15,7 @@ Cobetes - F1 Bets runs as an Astro 5 server-rendered application deployed on Ver
 
 **Recommendation:** remain on **Option A (Vercel + Turso)**. The entire deployment pipeline, secret management, and runtime code already assume Vercel's `output: "server"` adapter. Current usage and budget do not justify migrating to heavier platforms.
 
-- **Platform:** Vercel serverless runtime + Turso LibSQL
+- **Platform:** Vercel serverless runtime + Turso LibSQL (Astro 5.14.1, @astrojs/react 4.4.0, @astrojs/vercel 8.2.8)
 - **Key Services:** Vercel Functions, Vercel Edge CDN, Turso database instance
 - **Deployment Host/Regions:** Vercel auto-distributed (primary region selected near deployment); Turso default region FRA with optional replicas
 
@@ -40,3 +40,4 @@ Cobetes - F1 Bets runs as an Astro 5 server-rendered application deployed on Ver
 |- docs/                      # Documentation (this file, brief.md)
 `- .bmad-core/                # BMAD agent workflows
 ```
+
