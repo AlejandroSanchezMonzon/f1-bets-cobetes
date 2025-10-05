@@ -1,0 +1,47 @@
+schema: 1
+story: '1.1'
+story_title: 'Source Consistency Audit'
+gate: PASS
+status_reason: 'Audit deliverables verified; findings documented for follow-up refactor story.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2025-10-05T12:19:57Z'
+quality_score: 100
+expires: '2025-10-19T12:19:57Z'
+
+top_issues:
+  - severity: medium
+    description: 'Refactor story must consolidate prediction API auth helpers and translate developer-facing error strings.'
+    refs:
+      - docs/stories/1.1-source-consistency-audit-findings.md
+    suggested_owner: dev
+
+waiver:
+  active: false
+
+evidence:
+  tests_reviewed: 0
+  risks_identified: 1
+  trace:
+    ac_covered: [1, 2]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'No code changes; audit highlights helper consolidation for upcoming work.'
+  performance:
+    status: PASS
+    notes: 'No runtime impact in this story.'
+  reliability:
+    status: PASS
+    notes: 'Operational behaviour unchanged.'
+  maintainability:
+    status: PASS
+    notes: 'Audit deliverables improve maintainability planning.'
+
+recommendations:
+  immediate:
+    - action: 'Implement Story 1.2 to apply documented helper consolidation and English translation fixes.'
+      refs:
+        - docs/stories/1.1-source-consistency-audit-findings.md
+  future: []
