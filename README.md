@@ -1,106 +1,105 @@
-﻿<img style="display: block; margin: auto; object-fit: cover; width: 50%;" src="https://github.com/user-attachments/assets/9e222c62-03ad-44b0-8ac0-a34f7d46340c" alt="Logo oficial de la aplicación web de F1 Bets Cobetes" />
+<img style="display: block; margin: auto; object-fit: cover; width: 50%;" src="https://github.com/user-attachments/assets/9e222c62-03ad-44b0-8ac0-a34f7d46340c" alt="Official logo of the F1 Bets Cobetes web app" />
 
 # F1 Bets Cobetes
 
-F1 Bets Cobetes es una aplicación web para gestionar apuestas lúdicas durante los fines de semana de Fórmula 1. Los usuarios pueden iniciar sesión, registrar predicciones de podio y seguir el ranking general de la comunidad en tiempo real.
+F1 Bets Cobetes is a private web application that helps a small group of Formula 1 fans run friendly prediction contests. Members log in every race week, submit podium picks, and watch the automatic leaderboard update once official results are posted.
 
-## Tabla de contenidos
-- [Descripción del proyecto](#descripción-del-proyecto)
-- [Características](#características)
-- [Tecnologías utilizadas](#tecnologías-utilizadas)
-- [Primeros pasos](#primeros-pasos)
-  - [Requisitos](#requisitos)
-  - [Instalación](#instalación)
-  - [Variables de entorno](#variables-de-entorno)
-  - [Comandos disponibles](#comandos-disponibles)
-- [Arquitectura rápida](#arquitectura-rápida)
-- [Uso](#uso)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
-- [Contacto](#contacto)
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
+- [Technology Stack](#technology-stack)
+- [Getting Started](#getting-started)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+  - [Available Commands](#available-commands)
+- [Architecture & Documentation](#architecture--documentation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-## Descripción del proyecto
-La plataforma combina páginas Astro con islas de React para ofrecer una experiencia ágil en escritorio y móvil. El backend expone rutas API serverless (Vercel) que consultan una base de datos LibSQL/Turso para almacenar pilotos, carreras, predicciones y resultados.
+## Project Overview
+The platform combines Astro pages with React islands to deliver a fast, responsive experience on both desktop and mobile. Serverless API routes host the business logic and persist data to a LibSQL/Turso database.
 
-## Características
-- **Autenticación con JWT**: Inicio de sesión por correo/contraseña y refresco de información de perfil.
-- **Predicciones de carrera**: Formulario dinámico con validaciones y bloqueo 30 minutos antes de cada evento.
-- **Panel administrativo**: Gestión de resultados y clasificación (qualy) con recálculo automático de puntos.
-- **Ranking global**: Vista React con visualizaciones de puntos totales y últimos resultados.
-- **Experiencia responsiva**: Estilos Tailwind 4 y tipografías personalizadas inspiradas en la F1.
+## Key Features
+- **JWT authentication:** email/password login with profile refresh endpoints.
+- **Prediction workflow:** dynamic forms, validation, and automatic submission lock 30 minutes before each session.
+- **Admin console:** manage race and qualifying results, recalculate scores, and clean up submissions.
+- **Leaderboard:** React-powered ranking view with season totals and latest race highlights.
+- **Responsive UI:** Tailwind CSS 4 tokens and custom F1-inspired typography.
 
-## Tecnologías utilizadas
-- [Astro 5](https://astro.build/) con salida `server` y adaptador para Vercel.
-- [React 19](https://react.dev/) para componentes interactivos.
-- [Tailwind CSS 4](https://tailwindcss.com/) + tokens definidos en `src/styles/global.css`.
-- [LibSQL / Turso](https://turso.tech/) como base de datos relacional ligera.
-- [JSON Web Tokens](https://jwt.io/) para autenticación y control de roles.
+## Technology Stack
+- [Astro 5](https://astro.build/) (`output: "server"`) deployed to Vercel.
+- [React 19](https://react.dev/) islands for interactive sections.
+- [Tailwind CSS 4](https://tailwindcss.com/) with theme tokens defined in `src/styles/global.css`.
+- [LibSQL / Turso](https://turso.tech/) for relational storage.
+- [JSON Web Tokens](https://jwt.io/) for authentication and authorization.
 
-## Primeros pasos
+## Getting Started
 
-### Requisitos
-- Node.js 18 o superior.
-- Gestor de paquetes compatible (`pnpm`, `npm` o `yarn`). El repositorio incluye `pnpm-lock.yaml`.
+### Requirements
+- Node.js 18 or newer.
+- Package manager you prefer (`pnpm`, `npm`, or `yarn`). The repository ships with `pnpm-lock.yaml`.
 
-### Instalación
+### Installation
 ```bash
 git clone https://github.com/AlejandroSanchezMonzon/f1-bets-cobetes.git
 cd f1-bets-cobetes
-pnpm install # o npm install / yarn install
+pnpm install    # or npm install / yarn install
 ```
 
-### Variables de entorno
-Crea un archivo `.env` en la raíz con las claves necesarias:
+### Environment Variables
+Create a `.env` file at the project root with:
 
-| Variable | Descripción |
+| Variable | Description |
 | --- | --- |
-| `JWT_SECRET` | Clave usada para firmar y verificar los tokens JWT. |
-| `TURSO_DATABASE_URL` | URL de conexión a la instancia de LibSQL/Turso. |
-| `TURSO_AUTH_TOKEN` | Token de autenticación para la base de datos. |
+| `JWT_SECRET` | Secret used to sign and verify JWT tokens. |
+| `TURSO_DATABASE_URL` | Connection string for the LibSQL/Turso instance. |
+| `TURSO_AUTH_TOKEN` | Auth token for the database. |
 
-> ⚠️ **Nunca** publiques estas variables en el repositorio ni en commits.
+> **Never** commit environment variables to source control.
 
-### Comandos disponibles
-| Comando | Descripción |
+### Available Commands
+| Command | Description |
 | --- | --- |
-| `pnpm dev` | Inicia el servidor de desarrollo en `http://localhost:4321`. |
-| `pnpm build` | Genera la versión lista para producción. |
-| `pnpm preview` | Sirve la build generada para verificación local. |
-| `pnpm astro ...` | Acceso directo a la CLI de Astro. |
+| `pnpm dev` | Start the development server at `http://localhost:4321`. |
+| `pnpm build` | Produce the production build. |
+| `pnpm preview` | Serve the production build locally. |
+| `pnpm astro ...` | Run arbitrary Astro CLI commands. |
 
-## Arquitectura rápida
-- Frontend híbrido: Astro para estructura y React (islas `client:load`) para vistas como ranking, countdown o historial de apuestas.
-- API interna en `src/pages/api/**`, con helpers reutilizables en `@/utils` y acceso a base de datos vía `@/lib/turso`.
-- Modelo de datos documentado en [`db/schema.sql`](db/schema.sql) y ampliado en los archivos de la carpeta [`context`](context/).
-- Eliminación lógica (`deleted_at`) en todas las tablas para preservar historiales.
+## Architecture & Documentation
+- High-level documentation lives in `docs/index.md`, which links to every project guide.
+- The canonical architecture reference is `docs/architecture.md`, sharded into sections under `docs/architecture/` for quick access (authentication, backend, frontend, etc.).
+- The project brief is stored at `docs/brief.md`.
 
-## Uso
-La versión en vivo está disponible en [f1-bets-cobetes.vercel.app](https://f1-bets-cobetes.vercel.app). Inicia sesión con tus credenciales para:
-- Registrar predicciones antes de cada carrera.
-- Revisar el ranking general y los resultados publicados.
-- (Solo administradores) Actualizar resultados oficiales, datos de qualy y recalcular puntuaciones.
+## Usage
+The live deployment is available at [f1-bets-cobetes.vercel.app](https://f1-bets-cobetes.vercel.app). After signing in you can:
+- Submit or edit predictions before the cutoff.
+- Review the global ranking and historical results.
+- (Admins only) Publish qualifying and race results, then trigger score recalculation.
 
-## Contribuciones
-¡Las contribuciones son bienvenidas! Sigue estos pasos:
-1. Haz un fork del repositorio y crea una rama descriptiva:
+## Contributing
+Contributions are welcome! Follow these steps:
+1. Fork the repository and create a feature branch:
    ```bash
-   git checkout -b feature/nueva-funcionalidad
+   git checkout -b feature/your-change
    ```
-2. Implementa tus cambios, respeta las convenciones documentadas en [`context/RULES.md`](context/RULES.md).
-3. Ejecuta los comandos de verificación que correspondan y actualiza la documentación si aplica.
-4. Realiza commit y push de la rama:
+2. Implement updates while following the coding standards documented in `docs/architecture/coding-standards-critical-rules.md`.
+3. Run the relevant checks and update documentation when needed.
+4. Commit and push your branch:
    ```bash
-   git commit -m "feat: agrega nueva funcionalidad"
-   git push origin feature/nueva-funcionalidad
+   git commit -m "feat: describe your change"
+   git push origin feature/your-change
    ```
-5. Abre un Pull Request describiendo el problema resuelto, pruebas realizadas y capturas relevantes.
+5. Open a Pull Request describing the problem solved, tests performed, and any screenshots.
 
-## Licencia
-Este proyecto se distribuye bajo la licencia [MIT](LICENSE).
+## License
+This project is distributed under the [MIT](LICENSE) license.
 
-## Contacto
-- **Alejandro Sánchez Monzón** · [GitHub](https://github.com/AlejandroSanchezMonzon)
+## Contact
+- **Alejandro S�nchez Monz�n** � [GitHub](https://github.com/AlejandroSanchezMonzon)
 
 ---
 
-© 2025 F1 Bets Cobetes
+� 2025 F1 Bets Cobetes

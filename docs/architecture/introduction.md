@@ -1,0 +1,2 @@
+# Introduction
+Cobetes - F1 Bets is a private Formula 1 prediction league for fewer than ten friends. The web application lets members submit weekly podium predictions, view standings, and if they are administrators publish official qualifying and race results. The system is currently in production and favors reliability and simplicity over large-scale growth. This document records the architecture exactly as it exists today so future agents can work effectively.
