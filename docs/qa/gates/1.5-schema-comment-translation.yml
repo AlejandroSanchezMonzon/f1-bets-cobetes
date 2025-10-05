@@ -1,0 +1,38 @@
+schema: 1
+story: '1.5'
+story_title: 'Translate Database Schema Comments to English'
+gate: PASS
+status_reason: 'Schema comments translated to English; documentation updated accordingly.'
+reviewer: 'Quinn (Test Architect)'
+updated: '2025-10-05T13:01:01Z'
+quality_score: 100
+expires: '2025-10-19T13:01:01Z'
+
+top_issues: []
+waiver:
+  active: false
+
+evidence:
+  tests_reviewed: 0
+  risks_identified: 0
+  trace:
+    ac_covered: [1, 2, 3]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'Documentation change only.'
+  performance:
+    status: PASS
+    notes: 'Documentation change only.'
+  reliability:
+    status: PASS
+    notes: 'Documentation change only.'
+  maintainability:
+    status: PASS
+    notes: 'Schema documentation is now fully in English.'
+
+recommendations:
+  immediate: []
+  future: []
