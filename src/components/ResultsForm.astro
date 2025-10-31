@@ -125,6 +125,62 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       }
     }
 
+    function populateResultDriverOptions(
+      select: HTMLSelectElement,
+      searchTerm: string,
+      selectedValue: string | null = null
+    ) {
+      const normalizedTerm = searchTerm.trim().toLowerCase();
+      const filteredDrivers = normalizedTerm
+        ? drivers.filter((driver: any) =>
+            driver.name.toLowerCase().includes(normalizedTerm)
+          )
+        : drivers;
+
+      select.innerHTML = "";
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.text = "Seleccione piloto";
+      select.appendChild(defaultOption);
+
+      filteredDrivers.forEach((driver: any) => {
+        const option = document.createElement("option");
+        option.value = driver.id.toString();
+        option.text = driver.name;
+        select.appendChild(option);
+      });
+
+      if (
+        selectedValue &&
+        Array.from(select.options).some(
+          (option) => option.value === selectedValue
+        )
+      ) {
+        select.value = selectedValue;
+      }
+    }
+
+    function refreshResultSelectOptions() {
+      const selects = podiumContainer.querySelectorAll("select");
+      selects.forEach((select) => {
+        const driverSelect = select as HTMLSelectElement;
+        const searchInput = driverSelect.previousElementSibling as
+          | HTMLInputElement
+          | null;
+        const currentValue = driverSelect.value;
+        const currentSearch = searchInput?.value ?? "";
+        populateResultDriverOptions(
+          driverSelect,
+          currentSearch,
+          currentValue || null
+        );
+        if (!driverSelect.value) {
+          formData[driverSelect.name] = null;
+        }
+      });
+      toggleSubmitButton();
+    }
+
     function createResultSelect(position: number, prefillValue: any = null) {
       const div = document.createElement("div");
 
@@ -132,6 +188,13 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       label.innerText = `Posición ${position}`;
       label.setAttribute("for", "result-" + position);
       label.className = "block mb-2 text-sm font-regular";
+
+      const searchInput = document.createElement("input");
+      searchInput.type = "text";
+      searchInput.placeholder = "Buscar piloto...";
+      searchInput.className =
+        "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5 mb-2";
+      searchInput.setAttribute("data-driver-search", "true");
 
       const select = document.createElement("select");
       select.id = "result-" + position;
@@ -142,20 +205,13 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5 mb-4";
       select.required = true;
 
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.text = "Seleccione piloto";
-      select.appendChild(defaultOption);
-
-      drivers.forEach((driver: any) => {
-        const option = document.createElement("option");
-        option.value = driver.id.toString();
-        option.text = driver.name;
-        select.appendChild(option);
-      });
+      populateResultDriverOptions(
+        select,
+        "",
+        prefillValue !== null ? prefillValue.toString() : null
+      );
 
       if (prefillValue !== null) {
-        select.value = prefillValue.toString();
         formData[select.name] = prefillValue;
       }
 
@@ -166,7 +222,19 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         toggleSubmitButton();
       });
 
+      searchInput.addEventListener("input", () => {
+        const previousValue = select.value;
+        populateResultDriverOptions(select, searchInput.value, previousValue);
+        if (select.value !== previousValue) {
+          formData[select.name] = select.value
+            ? parseInt(select.value, 10)
+            : null;
+          toggleSubmitButton();
+        }
+      });
+
       div.appendChild(label);
+      div.appendChild(searchInput);
       div.appendChild(select);
       return div;
     }
@@ -209,6 +277,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         .then((data) => {
           if (data.drivers && Array.isArray(data.drivers)) {
             drivers = data.drivers;
+            refreshResultSelectOptions();
           }
         })
         .catch((err) => console.error("Error al cargar los pilotos:", err));

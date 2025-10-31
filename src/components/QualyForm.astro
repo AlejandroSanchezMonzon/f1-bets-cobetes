@@ -84,6 +84,53 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     let currentQualy: any = null;
     let isUpdateMode = false;
 
+    function populateQualyDriverOptions(
+      select: HTMLSelectElement,
+      searchTerm: string,
+      selectedValue = ""
+    ) {
+      const normalizedTerm = searchTerm.trim().toLowerCase();
+      const filteredDrivers = normalizedTerm
+        ? drivers.filter((driver: any) =>
+            driver.name.toLowerCase().includes(normalizedTerm)
+          )
+        : drivers;
+
+      select.innerHTML = "";
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.text = "Seleccione piloto";
+      select.appendChild(defaultOption);
+
+      filteredDrivers.forEach((driver: any) => {
+        const option = document.createElement("option");
+        option.value = driver.id;
+        option.text = driver.name;
+        select.appendChild(option);
+      });
+
+      if (
+        selectedValue &&
+        Array.from(select.options).some((option) => option.value === selectedValue)
+      ) {
+        select.value = selectedValue;
+      }
+    }
+
+    function refreshQualyDriverOptions() {
+      const selects = driversContainer.querySelectorAll("select");
+      selects.forEach((select) => {
+        const driverSelect = select as HTMLSelectElement;
+        const searchInput = driverSelect.previousElementSibling as
+          | HTMLInputElement
+          | null;
+        const previousValue = driverSelect.value;
+        const searchValue = searchInput?.value ?? "";
+        populateQualyDriverOptions(driverSelect, searchValue, previousValue);
+      });
+      toggleSubmitButton();
+    }
+
     function createDriverSelect(position: number, prefillValue = "") {
       const div = document.createElement("div");
 
@@ -92,6 +139,13 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       label.setAttribute("for", "driver-" + position);
       label.className = "block mb-2 text-sm font-regular";
 
+      const searchInput = document.createElement("input");
+      searchInput.type = "text";
+      searchInput.placeholder = "Buscar piloto...";
+      searchInput.className =
+        "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5 mb-2";
+      searchInput.setAttribute("data-driver-search", "true");
+
       const select = document.createElement("select");
       select.id = "driver-" + position;
       select.name = "position" + position;
@@ -99,27 +153,22 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5";
       select.required = true;
 
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.text = "Seleccione piloto";
-      select.appendChild(defaultOption);
-
-      drivers.forEach((driver: any) => {
-        const option = document.createElement("option");
-        option.value = driver.id;
-        option.text = driver.name;
-        select.appendChild(option);
-      });
-
-      if (prefillValue) {
-        select.value = prefillValue;
-      }
+      populateQualyDriverOptions(select, "", prefillValue);
 
       select.addEventListener("change", () => {
         toggleSubmitButton();
       });
 
+      searchInput.addEventListener("input", () => {
+        const previousValue = select.value;
+        populateQualyDriverOptions(select, searchInput.value, previousValue);
+        if (select.value !== previousValue) {
+          toggleSubmitButton();
+        }
+      });
+
       div.appendChild(label);
+      div.appendChild(searchInput);
       div.appendChild(select);
       return div;
     }
@@ -171,6 +220,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         .then((data) => {
           if (data.drivers && Array.isArray(data.drivers)) {
             drivers = data.drivers;
+            refreshQualyDriverOptions();
           }
         })
         .catch((err) => console.error("Error al cargar los pilotos:", err));
