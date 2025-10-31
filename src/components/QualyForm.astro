@@ -80,111 +80,310 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       "delete-button-qualy"
     ) as HTMLButtonElement;
 
-    let drivers: any = [];
+    type FilterableDriverField = {
+      element: HTMLDivElement;
+      setDrivers: (driversList: any[]) => void;
+      setValue: (value: string | null) => void;
+      getValue: () => string | null;
+      destroy: () => void;
+    };
+
+    let drivers: any[] = [];
     let currentQualy: any = null;
     let isUpdateMode = false;
+    let allRaces: any[] = [];
 
-    function populateQualyDriverOptions(
-      select: HTMLSelectElement,
-      searchTerm: string,
-      selectedValue = ""
-    ) {
-      const normalizedTerm = searchTerm.trim().toLowerCase();
-      const filteredDrivers = normalizedTerm
-        ? drivers.filter((driver: any) =>
-            driver.name.toLowerCase().includes(normalizedTerm)
-          )
-        : drivers;
+    const qualyPickers: FilterableDriverField[] = [];
 
-      select.innerHTML = "";
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.text = "Seleccione piloto";
-      select.appendChild(defaultOption);
-
-      filteredDrivers.forEach((driver: any) => {
-        const option = document.createElement("option");
-        option.value = driver.id;
-        option.text = driver.name;
-        select.appendChild(option);
-      });
-
-      if (
-        selectedValue &&
-        Array.from(select.options).some((option) => option.value === selectedValue)
-      ) {
-        select.value = selectedValue;
-      }
-    }
-
-    function refreshQualyDriverOptions() {
-      const selects = driversContainer.querySelectorAll("select");
-      selects.forEach((select) => {
-        const driverSelect = select as HTMLSelectElement;
-        const searchInput = driverSelect.previousElementSibling as
-          | HTMLInputElement
-          | null;
-        const previousValue = driverSelect.value;
-        const searchValue = searchInput?.value ?? "";
-        populateQualyDriverOptions(driverSelect, searchValue, previousValue);
-      });
-      toggleSubmitButton();
-    }
-
-    function createDriverSelect(position: number, prefillValue = "") {
-      const div = document.createElement("div");
+    function createFilterableDriverField({
+      labelText,
+      name,
+      inputId,
+      onChange,
+    }: {
+      labelText: string;
+      name: string;
+      inputId: string;
+      onChange: (value: string | null) => void;
+    }): FilterableDriverField {
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("flex", "flex-col", "gap-2");
 
       const label = document.createElement("label");
-      label.innerText = "Posición " + position;
-      label.setAttribute("for", "driver-" + position);
-      label.className = "block mb-2 text-sm font-regular";
+      label.innerText = labelText;
+      label.setAttribute("for", inputId);
+      label.className = "block text-sm font-regular";
 
-      const searchInput = document.createElement("input");
-      searchInput.type = "text";
-      searchInput.placeholder = "Buscar piloto...";
-      searchInput.className =
-        "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5 mb-2";
-      searchInput.setAttribute("data-driver-search", "true");
+      const controlWrapper = document.createElement("div");
+      controlWrapper.className = "relative";
 
-      const select = document.createElement("select");
-      select.id = "driver-" + position;
-      select.name = "position" + position;
-      select.className =
-        "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5";
-      select.required = true;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = inputId;
+      input.placeholder = "Buscar piloto...";
+      input.className =
+        "bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5 pr-10";
+      input.autocomplete = "off";
 
-      populateQualyDriverOptions(select, "", prefillValue);
+      const toggleButton = document.createElement("button");
+      toggleButton.type = "button";
+      toggleButton.innerHTML = "&#9662;";
+      toggleButton.className =
+        "absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-primary focus:text-primary";
+      toggleButton.setAttribute("aria-label", "Mostrar opciones de piloto");
 
-      select.addEventListener("change", () => {
-        toggleSubmitButton();
+      const dropdown = document.createElement("ul");
+      dropdown.className =
+        "absolute z-10 mt-1 w-full bg-secondary border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto hidden";
+
+      const hiddenInput = document.createElement("input");
+      hiddenInput.type = "hidden";
+      hiddenInput.name = name;
+
+      controlWrapper.appendChild(input);
+      controlWrapper.appendChild(toggleButton);
+      controlWrapper.appendChild(dropdown);
+      controlWrapper.appendChild(hiddenInput);
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(controlWrapper);
+
+      let availableDrivers: any[] = [];
+      let filteredDrivers: any[] = [];
+      let highlightedIndex = -1;
+      let searchTerm = "";
+      let isListOpen = false;
+
+      function highlightOption(index: number) {
+        const options = dropdown.querySelectorAll("li[data-index]");
+        options.forEach((option) => {
+          option.classList.remove("bg-accent", "text-primary");
+        });
+
+        if (index >= 0 && index < options.length) {
+          const option = options[index] as HTMLLIElement;
+          option.classList.add("bg-accent", "text-primary");
+          highlightedIndex = index;
+        } else {
+          highlightedIndex = -1;
+        }
+      }
+
+      function renderList() {
+        const normalized = searchTerm.trim().toLowerCase();
+        filteredDrivers = normalized
+          ? availableDrivers.filter((driver: any) =>
+              driver.name.toLowerCase().includes(normalized)
+            )
+          : [...availableDrivers];
+
+        dropdown.innerHTML = "";
+
+        if (!filteredDrivers.length) {
+          const emptyState = document.createElement("li");
+          emptyState.textContent = "Sin coincidencias";
+          emptyState.className = "px-3 py-2 text-sm text-gray-400";
+          dropdown.appendChild(emptyState);
+          highlightOption(-1);
+          return;
+        }
+
+        filteredDrivers.forEach((driver: any, index: number) => {
+          const option = document.createElement("li");
+          option.textContent = driver.name;
+          option.setAttribute("data-index", index.toString());
+          option.className =
+            "px-3 py-2 cursor-pointer hover:bg-accent hover:text-primary text-sm";
+          option.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+            selectDriver(driver);
+          });
+          dropdown.appendChild(option);
+        });
+
+        if (hiddenInput.value && !searchTerm) {
+          const selectedIndex = filteredDrivers.findIndex(
+            (driver: any) => driver.id.toString() === hiddenInput.value
+          );
+          highlightOption(selectedIndex);
+        } else {
+          highlightOption(filteredDrivers.length ? 0 : -1);
+        }
+      }
+
+      function showList() {
+        if (!isListOpen) {
+          dropdown.classList.remove("hidden");
+          isListOpen = true;
+        }
+      }
+
+      function hideList() {
+        if (isListOpen) {
+          dropdown.classList.add("hidden");
+          isListOpen = false;
+          highlightOption(-1);
+        }
+      }
+
+      function syncSelection() {
+        if (!hiddenInput.value) {
+          if (!searchTerm) {
+            input.value = "";
+          }
+          return;
+        }
+
+        const selectedDriver = availableDrivers.find(
+          (driver: any) => driver.id.toString() === hiddenInput.value
+        );
+
+        if (selectedDriver) {
+          input.value = selectedDriver.name;
+        }
+      }
+
+      function selectDriver(driver: any) {
+        hiddenInput.value = driver.id.toString();
+        input.value = driver.name;
+        searchTerm = "";
+        hideList();
+        onChange(hiddenInput.value);
+      }
+
+      input.addEventListener("focus", () => {
+        searchTerm = "";
+        renderList();
+        showList();
+        setTimeout(() => input.select(), 0);
       });
 
-      searchInput.addEventListener("input", () => {
-        const previousValue = select.value;
-        populateQualyDriverOptions(select, searchInput.value, previousValue);
-        if (select.value !== previousValue) {
-          toggleSubmitButton();
+      input.addEventListener("click", () => {
+        renderList();
+        showList();
+      });
+
+      input.addEventListener("input", () => {
+        searchTerm = input.value;
+        hiddenInput.value = "";
+        onChange(null);
+        renderList();
+        showList();
+        if (filteredDrivers.length) {
+          highlightOption(0);
         }
       });
 
-      div.appendChild(label);
-      div.appendChild(searchInput);
-      div.appendChild(select);
-      return div;
+      input.addEventListener("keydown", (event) => {
+        const key = event.key;
+        if (key === "ArrowDown") {
+          event.preventDefault();
+          if (!isListOpen) {
+            renderList();
+            showList();
+          }
+          if (!filteredDrivers.length) return;
+          const nextIndex = highlightedIndex + 1;
+          highlightOption(
+            nextIndex >= filteredDrivers.length ? 0 : nextIndex
+          );
+        } else if (key === "ArrowUp") {
+          event.preventDefault();
+          if (!isListOpen) {
+            renderList();
+            showList();
+          }
+          if (!filteredDrivers.length) return;
+          const prevIndex =
+            highlightedIndex <= 0
+              ? filteredDrivers.length - 1
+              : highlightedIndex - 1;
+          highlightOption(prevIndex);
+        } else if (key === "Enter") {
+          event.preventDefault();
+          if (!isListOpen) {
+            renderList();
+            showList();
+            return;
+          }
+          if (highlightedIndex >= 0 && highlightedIndex < filteredDrivers.length) {
+            selectDriver(filteredDrivers[highlightedIndex]);
+          } else if (filteredDrivers.length === 1) {
+            selectDriver(filteredDrivers[0]);
+          }
+        } else if (key === "Escape") {
+          hideList();
+        }
+      });
+
+      toggleButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (isListOpen) {
+          hideList();
+        } else {
+          input.focus();
+          searchTerm = "";
+          renderList();
+          showList();
+        }
+      });
+
+      const handleDocumentClick = (event: MouseEvent) => {
+        if (!wrapper.contains(event.target as Node)) {
+          hideList();
+          if (!hiddenInput.value && !searchTerm) {
+            input.value = "";
+          }
+        }
+      };
+
+      document.addEventListener("click", handleDocumentClick);
+
+      const field: FilterableDriverField = {
+        element: wrapper,
+        setDrivers(driversList: any[]) {
+          availableDrivers = Array.isArray(driversList) ? driversList : [];
+          if (isListOpen) {
+            renderList();
+          }
+          syncSelection();
+        },
+        setValue(value: string | null) {
+          hiddenInput.value = value ?? "";
+          searchTerm = "";
+          syncSelection();
+          if (!hiddenInput.value) {
+            onChange(null);
+          } else {
+            onChange(hiddenInput.value);
+          }
+        },
+        getValue() {
+          return hiddenInput.value || null;
+        },
+        destroy() {
+          document.removeEventListener("click", handleDocumentClick);
+          hideList();
+        },
+      };
+
+      return field;
+    }
+
+    function isNonEmpty(value: string | null): value is string {
+      return value !== null && value !== "";
     }
 
     function validateForm() {
       if (!raceSelect.value) return false;
+      if (qualyPickers.length !== 20) return false;
 
-      let selectedDrivers = [];
-      for (let i = 1; i <= 20; i++) {
-        const select = document.getElementById(
-          "driver-" + i
-        ) as HTMLSelectElement;
-        if (!select) return false;
-        if (select.value === "") return false;
-        selectedDrivers.push(select.value);
-      }
+      const selectedDrivers = qualyPickers
+        .map((picker) => picker.getValue())
+        .filter(isNonEmpty);
+
+      if (selectedDrivers.length !== qualyPickers.length) return false;
+
       const uniqueDrivers = new Set(selectedDrivers);
       return uniqueDrivers.size === selectedDrivers.length;
     }
@@ -201,7 +400,6 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       }
     }
 
-    let allRaces: any = [];
     function loadRaces() {
       fetch("/api/race-weekends")
         .then((res) => res.json())
@@ -220,7 +418,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         .then((data) => {
           if (data.drivers && Array.isArray(data.drivers)) {
             drivers = data.drivers;
-            refreshQualyDriverOptions();
+            qualyPickers.forEach((picker) => picker.setDrivers(drivers));
           }
         })
         .catch((err) => console.error("Error al cargar los pilotos:", err));
@@ -273,11 +471,33 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     }
 
     function populateDriverSelects() {
+      qualyPickers.forEach((picker) => picker.destroy());
       driversContainer.innerHTML = "";
+      qualyPickers.length = 0;
+
       for (let i = 1; i <= 20; i++) {
-        const prefill = currentQualy ? currentQualy[`position${i}`] : "";
-        const selectDiv = createDriverSelect(i, prefill);
-        driversContainer.appendChild(selectDiv);
+        const fieldName = `position${i}`;
+        const prefill = currentQualy ? currentQualy[fieldName] : "";
+
+        const picker = createFilterableDriverField({
+          labelText: "Posición " + i,
+          name: fieldName,
+          inputId: `driver-${i}`,
+          onChange: () => {
+            toggleSubmitButton();
+          },
+        });
+
+        if (prefill) {
+          picker.setValue(prefill.toString());
+        } else {
+          picker.setValue(null);
+        }
+
+        picker.setDrivers(drivers);
+
+        qualyPickers.push(picker);
+        driversContainer.appendChild(picker.element);
       }
 
       toggleSubmitButton();
@@ -292,7 +512,9 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       if (raceId) {
         loadQualy(raceId);
       } else {
+        qualyPickers.forEach((picker) => picker.destroy());
         driversContainer.innerHTML = "";
+        qualyPickers.length = 0;
         submitButton.textContent = "Guardar Qualy";
         deleteButton.classList.add("hidden");
         toggleSubmitButton();
@@ -303,15 +525,7 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
       window.dispatchEvent(new CustomEvent("toggleLoading", { detail: true }));
 
       e.preventDefault();
-      const positions = [];
-      for (let i = 1; i <= 20; i++) {
-        const select = document.getElementById(
-          "driver-" + i
-        ) as HTMLSelectElement;
-        if (select) {
-          positions.push(select.value);
-        }
-      }
+      const positions = qualyPickers.map((picker) => picker.getValue() ?? "");
       const raceId = raceSelect.value;
       if (!raceId) {
         window.toast({
@@ -323,6 +537,18 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
         });
         return;
       }
+
+      if (positions.some((value) => value === "")) {
+        window.toast({
+          title: "Error",
+          message: "Debe seleccionar los 20 pilotos",
+          type: "error",
+          dismissible: true,
+          icon: true,
+        });
+        return;
+      }
+
       const payload = {
         race_weekend_id: raceId,
         positions,
@@ -434,3 +660,4 @@ import LoadingOverlay from "@/components/LoadingOverlay.tsx";
     toggleSubmitButton();
   });
 </script>
+
