@@ -38,6 +38,5 @@ Cobetes - F1 Bets runs as an Astro 5.15.5 server-rendered application deployed o
 |  |- layouts/               # Global layout wrapper
 |- db/schema.sql              # LibSQL schema definition
 |- docs/                      # Documentation (this file, brief.md)
-`- .bmad-core/                # BMAD agent workflows
 ```
 
