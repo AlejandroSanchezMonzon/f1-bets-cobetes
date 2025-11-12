@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Loader from "@/components/Loader";
 import LoadingOverlay from "@/components/LoadingOverlay";
 
@@ -66,6 +66,230 @@ const weatherIcons = {
   "Thunderstorm with slight hail": "/icons/thunderstorm.svg",
   "Thunderstorm with heavy hail": "/icons/thunderstorm.svg",
 };
+
+function FilterableDriverPicker({
+  name,
+  value,
+  drivers,
+  onChange,
+  placeholder = "Buscar piloto...",
+}) {
+  const normalizedValue = value ? value.toString() : "";
+  const [inputValue, setInputValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const containerRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const driverList = useMemo(
+    () =>
+      Object.entries(drivers).map(([id, driver]) => ({
+        id: id.toString(),
+        name: driver.name,
+      })),
+    [drivers]
+  );
+
+  const filteredDrivers = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) {
+      return driverList;
+    }
+    return driverList.filter((driver) =>
+      driver.name.toLowerCase().includes(term)
+    );
+  }, [driverList, searchTerm]);
+
+  useEffect(() => {
+    if (normalizedValue && drivers[normalizedValue]) {
+      setInputValue(drivers[normalizedValue].name);
+      setSearchTerm("");
+    }
+  }, [normalizedValue, drivers]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+        if (normalizedValue && drivers[normalizedValue]) {
+          setInputValue(drivers[normalizedValue].name);
+        }
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [normalizedValue, drivers]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!filteredDrivers.length) {
+      setHighlightedIndex(-1);
+      return;
+    }
+
+    if (normalizedValue) {
+      const selectedIndex = filteredDrivers.findIndex(
+        (driver) => driver.id === normalizedValue
+      );
+      if (selectedIndex >= 0) {
+        setHighlightedIndex(selectedIndex);
+        return;
+      }
+    }
+
+    setHighlightedIndex(0);
+  }, [filteredDrivers, isOpen, normalizedValue]);
+
+  const emitChange = (newValue) => {
+    if (onChange) {
+      onChange({ target: { name, value: newValue } });
+    }
+  };
+
+  const selectDriver = (driverId) => {
+    if (!drivers[driverId]) return;
+    emitChange(driverId);
+    setInputValue(drivers[driverId].name);
+    setSearchTerm("");
+    setIsOpen(false);
+  };
+
+  const handleInputChange = (event) => {
+    const nextValue = event.target.value;
+    setInputValue(nextValue);
+    setSearchTerm(nextValue);
+    emitChange("");
+    setIsOpen(true);
+  };
+
+  const handleFocus = () => {
+    setSearchTerm("");
+    setIsOpen(true);
+    setTimeout(() => inputRef.current?.select(), 0);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (!isOpen) {
+        setIsOpen(true);
+        return;
+      }
+      if (!filteredDrivers.length) return;
+      setHighlightedIndex((prev) => {
+        const nextIndex = prev + 1;
+        return nextIndex >= filteredDrivers.length ? 0 : nextIndex;
+      });
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (!isOpen) {
+        setIsOpen(true);
+        return;
+      }
+      if (!filteredDrivers.length) return;
+      setHighlightedIndex((prev) => {
+        if (prev <= 0) {
+          return filteredDrivers.length - 1;
+        }
+        return prev - 1;
+      });
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (!isOpen) {
+        setIsOpen(true);
+        return;
+      }
+      if (highlightedIndex >= 0 && highlightedIndex < filteredDrivers.length) {
+        selectDriver(filteredDrivers[highlightedIndex].id);
+      } else if (filteredDrivers.length === 1) {
+        selectDriver(filteredDrivers[0].id);
+      }
+    } else if (event.key === "Escape") {
+      setIsOpen(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
+  const handleToggle = () => {
+    if (isOpen) {
+      setIsOpen(false);
+      setHighlightedIndex(-1);
+    } else {
+      setSearchTerm("");
+      setIsOpen(true);
+      inputRef.current?.focus();
+    }
+  };
+
+  return (
+    <div className="w-full relative" ref={containerRef}>
+      <input
+        ref={inputRef}
+        type="text"
+        name={`${name}-search`}
+        value={inputValue}
+        onChange={handleInputChange}
+        onFocus={handleFocus}
+        onClick={() => setIsOpen(true)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        autoComplete="off"
+        className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5 pr-10"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-controls={`${name}-options`}
+      />
+      <button
+        type="button"
+        onClick={handleToggle}
+        className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-primary focus:text-primary"
+        aria-label="Mostrar opciones de piloto"
+      >
+        &#9662;
+      </button>
+      <ul
+        id={`${name}-options`}
+        className={`absolute z-10 mt-1 w-full bg-secondary border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto ${
+          isOpen ? "" : "hidden"
+        }`}
+        role="listbox"
+      >
+        {filteredDrivers.length ? (
+          filteredDrivers.map((driver, index) => (
+            <li
+              key={driver.id}
+              role="option"
+              aria-selected={driver.id === normalizedValue}
+              className={`px-3 py-2 text-sm cursor-pointer ${
+                index === highlightedIndex
+                  ? "bg-accent text-primary"
+                  : "hover:bg-accent hover:text-primary"
+              }`}
+              data-index={index}
+              onMouseDown={(event) => {
+                event.preventDefault();
+                selectDriver(driver.id);
+              }}
+              onMouseEnter={() => setHighlightedIndex(index)}
+            >
+              {driver.name}
+            </li>
+          ))
+        ) : (
+          <li className="px-3 py-2 text-sm text-gray-400 select-none">
+            Sin resultados
+          </li>
+        )}
+      </ul>
+    </div>
+  );
+}
 
 export default function NextBetDetails() {
   const [raceData, setRaceData] = useState(null);
@@ -201,11 +425,18 @@ export default function NextBetDetails() {
             const userPrediction = data.prediction;
 
             setPrediction(userPrediction);
+            const normalizePredictionValue = (value) =>
+              value === null || value === undefined ? "" : value.toString();
             setFormData({
-              position_predicted_first: userPrediction.position_predicted_first,
-              position_predicted_second:
-                userPrediction.position_predicted_second,
-              position_predicted_third: userPrediction.position_predicted_third,
+              position_predicted_first: normalizePredictionValue(
+                userPrediction.position_predicted_first
+              ),
+              position_predicted_second: normalizePredictionValue(
+                userPrediction.position_predicted_second
+              ),
+              position_predicted_third: normalizePredictionValue(
+                userPrediction.position_predicted_third
+              ),
             });
           }
         })
@@ -415,20 +646,15 @@ export default function NextBetDetails() {
               <label className="block text-sm mb-2 font-medium">
                 1ª Posición
               </label>
-              <div className="flex items-center">
-                <select
-                  name="position_predicted_first"
-                  value={formData.position_predicted_first}
-                  onChange={handleChange}
-                  className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
-                >
-                  <option value="">Seleccione piloto</option>
-                  {Object.entries(driverMapping).map(([id, driver]) => (
-                    <option key={id} value={id}>
-                      {driver.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="w-full sm:flex-1">
+                  <FilterableDriverPicker
+                    name="position_predicted_first"
+                    value={formData.position_predicted_first}
+                    drivers={driverMapping}
+                    onChange={handleChange}
+                  />
+                </div>
                 {formData.position_predicted_first &&
                   driverMapping[formData.position_predicted_first] && (
                     <img
@@ -440,7 +666,7 @@ export default function NextBetDetails() {
                         driverMapping[formData.position_predicted_first]
                           .nationality
                       }
-                      className="w-10 h-6 ml-4 object-contain border border-gray-300/50 rounded"
+                      className="w-10 h-6 sm:ml-4 object-contain border border-gray-300/50 rounded"
                     />
                   )}
               </div>
@@ -449,20 +675,15 @@ export default function NextBetDetails() {
               <label className="block text-sm mb-2 font-medium">
                 2ª Posición
               </label>
-              <div className="flex items-center">
-                <select
-                  name="position_predicted_second"
-                  value={formData.position_predicted_second}
-                  onChange={handleChange}
-                  className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
-                >
-                  <option value="">Seleccione piloto</option>
-                  {Object.entries(driverMapping).map(([id, driver]) => (
-                    <option key={id} value={id}>
-                      {driver.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="w-full sm:flex-1">
+                  <FilterableDriverPicker
+                    name="position_predicted_second"
+                    value={formData.position_predicted_second}
+                    drivers={driverMapping}
+                    onChange={handleChange}
+                  />
+                </div>
                 {formData.position_predicted_second &&
                   driverMapping[formData.position_predicted_second] && (
                     <img
@@ -474,7 +695,7 @@ export default function NextBetDetails() {
                         driverMapping[formData.position_predicted_second]
                           .nationality
                       }
-                      className="w-10 h-6 ml-4 object-contain border border-gray-300/50 rounded"
+                      className="w-10 h-6 sm:ml-4 object-contain border border-gray-300/50 rounded"
                     />
                   )}
               </div>
@@ -483,20 +704,15 @@ export default function NextBetDetails() {
               <label className="block text-sm mb-2 font-medium">
                 3ª Posición
               </label>
-              <div className="flex items-center">
-                <select
-                  name="position_predicted_third"
-                  value={formData.position_predicted_third}
-                  onChange={handleChange}
-                  className="bg-secondary border border-gray-300 text-sm rounded-lg block w-full p-2.5"
-                >
-                  <option value="">Seleccione piloto</option>
-                  {Object.entries(driverMapping).map(([id, driver]) => (
-                    <option key={id} value={id}>
-                      {driver.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="w-full sm:flex-1">
+                  <FilterableDriverPicker
+                    name="position_predicted_third"
+                    value={formData.position_predicted_third}
+                    drivers={driverMapping}
+                    onChange={handleChange}
+                  />
+                </div>
                 {formData.position_predicted_third &&
                   driverMapping[formData.position_predicted_third] && (
                     <img
@@ -508,7 +724,7 @@ export default function NextBetDetails() {
                         driverMapping[formData.position_predicted_third]
                           .nationality
                       }
-                      className="w-10 h-6 ml-4 object-contain border border-gray-300/50 rounded"
+                      className="w-10 h-6 sm:ml-4 object-contain border border-gray-300/50 rounded"
                     />
                   )}
               </div>
