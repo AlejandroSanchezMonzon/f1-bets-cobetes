@@ -11,3 +11,7 @@
 ## Residual Risk & Recommendations
 - Because RSC is not enabled, exposure to this specific issue is minimal. Avoid enabling React Server Components until the React team confirms patches are stable.
 - Continue monitoring React security advisories; if RSC is ever introduced, ensure patched versions are in place before deployment.
+
+## Conclusion
+- Current architecture (Astro + React islands only) means the project is not directly vulnerable to the RSC disclosure.
+- Keeping React and Astro dependencies on supported patch releases, as updated above, is sufficient mitigation while avoiding RSC entirely.
