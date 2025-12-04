@@ -82,3 +82,7 @@ No description available.
 
 - **Automated tests:** none present.
 
+## Security
+
+- [React Server Components Vulnerability Assessment (Dec 2025)](./security/react-rsc-assessment.md)
+
